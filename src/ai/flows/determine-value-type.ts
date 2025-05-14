@@ -1,7 +1,9 @@
+
 'use server';
 
 /**
  * @fileOverview Determines the value type (urgency, market impact, strategic, revenue, cost) for a given project or epic based on user input.
+ * The user provides an initial assessment (level and notes) for each category. The AI confirms or adjusts this.
  *
  * - determineValueType - A function that handles the value type determination process.
  * - DetermineValueTypeInput - The input type for the determineValueType function.
@@ -11,59 +13,36 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const ValueTypeCategorySchema = z.enum([
-  'urgency',
-  'marketImpact',
-  'strategic',
-  'revenue',
-  'cost',
-]);
-
-const ChecklistItemSchema = z.object({
-  label: z.string(),
-  checked: z.boolean(),
+// Input schema for a single value type category provided by the user
+const UserValueAssessmentSchema = z.object({
+  level: z.enum(['high', 'mid', 'low']).describe("User's selected preliminary level for this category."),
+  notes: z.string().optional().describe("User's additional notes for this category."),
 });
 
-const ValueTypeDetailsSchema = z.object({
-  high: z.object({
-    checklist: z.array(ChecklistItemSchema),
-    text: z.string(),
-  }),
-  mid: z.object({
-    checklist: z.array(ChecklistItemSchema),
-    text: z.string(),
-  }),
-  low: z.object({
-    checklist: z.array(ChecklistItemSchema),
-    text: z.string(),
-  }),
-});
-
+// Input schema for the AI flow
 const DetermineValueTypeInputSchema = z.object({
-  urgency: ValueTypeDetailsSchema.describe('Details for urgency value type.'),
-  marketImpact: ValueTypeDetailsSchema.describe(
-    'Details for market impact value type.'
-  ),
-  strategic: ValueTypeDetailsSchema.describe('Details for strategic value type.'),
-  revenue: ValueTypeDetailsSchema.describe('Details for revenue value type.'),
-  cost: ValueTypeDetailsSchema.describe('Details for cost value type.'),
+  urgency: UserValueAssessmentSchema.describe('User assessment for Level of Urgency.'),
+  marketImpact: UserValueAssessmentSchema.describe('User assessment for Market Impact.'),
+  strategic: UserValueAssessmentSchema.describe('User assessment for Strategic value.'),
+  revenue: UserValueAssessmentSchema.describe('User assessment for Maximise Revenue.'),
+  cost: UserValueAssessmentSchema.describe('User assessment for Minimize Cost.'),
   overallConsiderations: z
     .string()
-    .describe('Overall considerations if the epic is not worked on.'),
+    .optional()
+    .describe('Overall considerations or consequences if the epic is not worked on.'),
 });
 
 export type DetermineValueTypeInput = z.infer<typeof DetermineValueTypeInputSchema>;
 
+// Output schema remains the same: AI's final determination for each category
 const ValueTypeResultSchema = z.enum(['high', 'mid', 'low']);
 
 const DetermineValueTypeOutputSchema = z.object({
-  urgency: ValueTypeResultSchema.describe('The determined urgency value type.'),
-  marketImpact: ValueTypeResultSchema.describe(
-    'The determined market impact value type.'
-  ),
-  strategic: ValueTypeResultSchema.describe('The determined strategic value type.'),
-  revenue: ValueTypeResultSchema.describe('The determined revenue value type.'),
-  cost: ValueTypeResultSchema.describe('The determined cost value type.'),
+  urgency: ValueTypeResultSchema.describe('The AI-determined urgency value type.'),
+  marketImpact: ValueTypeResultSchema.describe('The AI-determined market impact value type.'),
+  strategic: ValueTypeResultSchema.describe('The AI-determined strategic value type.'),
+  revenue: ValueTypeResultSchema.describe('The AI-determined revenue value type.'),
+  cost: ValueTypeResultSchema.describe('The AI-determined cost value type.'),
 });
 
 export type DetermineValueTypeOutput = z.infer<typeof DetermineValueTypeOutputSchema>;
@@ -78,27 +57,22 @@ const prompt = ai.definePrompt({
   name: 'determineValueTypePrompt',
   input: {schema: DetermineValueTypeInputSchema},
   output: {schema: DetermineValueTypeOutputSchema},
-  prompt: `You are an AI assistant helping determine the value type for a potential project or epic.
+  prompt: `You are an AI assistant helping to finalize the value type assessment for a project or epic.
+The user has provided an initial assessment for each category by selecting a level (high, mid, or low) and optional notes.
+Your task is to analyze all provided information, including the user's selections, notes, and overall considerations, to determine the most appropriate final value type (high, mid, or low) for each of the five categories.
 
-  Analyze the following information provided by the user and determine the appropriate value type (high, mid, or low) for each category (urgency, market impact, strategic, revenue, and cost).
+User's Initial Assessment:
+- Level of Urgency: Level: {{{urgency.level}}}, Notes: "{{{urgency.notes}}}"
+- Market Impact: Level: {{{marketImpact.level}}}, Notes: "{{{marketImpact.notes}}}"
+- Strategic: Level: {{{strategic.level}}}, Notes: "{{{strategic.notes}}}"
+- Maximise Revenue: Level: {{{revenue.level}}}, Notes: "{{{revenue.notes}}}"
+- Minimize Cost: Level: {{{cost.level}}}, Notes: "{{{cost.notes}}}"
 
-  Consider the checklists and free text fields for each value type category.
+Overall Considerations (what would happen if we don’t work on the epic right now?): "{{{overallConsiderations}}}"
 
-  Also, consider the overall consequences if the epic is not worked on.
-
-  Value Type Details:
-
-  Urgency: High: {{{urgency.high.text}}} Checklist: {{#each urgency.high.checklist}}- {{label}}: {{checked}}{{/each}} Mid: {{{urgency.mid.text}}} Checklist: {{#each urgency.mid.checklist}}- {{label}}: {{checked}}{{/each}} Low: {{{urgency.low.text}}} Checklist: {{#each urgency.low.checklist}}- {{label}}: {{checked}}{{/each}}
-  Market Impact: High: {{{marketImpact.high.text}}} Checklist: {{#each marketImpact.high.checklist}}- {{label}}: {{checked}}{{/each}} Mid: {{{marketImpact.mid.text}}} Checklist: {{#each marketImpact.mid.checklist}}- {{label}}: {{checked}}{{/each}} Low: {{{marketImpact.low.text}}} Checklist: {{#each marketImpact.low.checklist}}- {{label}}: {{checked}}{{/each}}
-  Strategic: High: {{{strategic.high.text}}} Checklist: {{#each strategic.high.checklist}}- {{label}}: {{checked}}{{/each}} Mid: {{{strategic.mid.text}}} Checklist: {{#each strategic.mid.checklist}}- {{label}}: {{checked}}{{/each}} Low: {{{strategic.low.text}}} Checklist: {{#each strategic.low.checklist}}- {{label}}: {{checked}}{{/each}}
-  Revenue: High: {{{revenue.high.text}}} Checklist: {{#each revenue.high.checklist}}- {{label}}: {{checked}}{{/each}} Mid: {{{revenue.mid.text}}} Checklist: {{#each revenue.mid.checklist}}- {{label}}: {{checked}}{{/each}} Low: {{{revenue.low.text}}} Checklist: {{#each revenue.low.checklist}}- {{label}}: {{checked}}{{/each}}
-  Cost: High: {{{cost.high.text}}} Checklist: {{#each cost.high.checklist}}- {{label}}: {{checked}}{{/each}} Mid: {{{cost.mid.text}}} Checklist: {{#each cost.mid.checklist}}- {{label}}: {{checked}}{{/each}} Low: {{{cost.low.text}}} Checklist: {{#each cost.low.checklist}}- {{label}}: {{checked}}{{/each}}
-
-  Overall Considerations: {{{overallConsiderations}}}
-
-  Based on the information above, determine the value type for each category.
-
-  Output the value types in JSON format.
+Based on all this information, output your final determination for each category as 'high', 'mid', or 'low'.
+Explain your reasoning if your determination differs from the user's initial assessment or if the notes significantly influence your decision.
+Output the value types in JSON format.
   `,
 });
 
@@ -109,6 +83,8 @@ const determineValueTypeFlow = ai.defineFlow(
     outputSchema: DetermineValueTypeOutputSchema,
   },
   async input => {
+    // The AI will determine the final output based on the structured input.
+    // The prompt guides the AI to consider the user's input but make its own final judgment.
     const {output} = await prompt(input);
     return output!;
   }

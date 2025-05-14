@@ -1,27 +1,20 @@
+
 import { z } from 'zod';
 
-const ChecklistItemSchema = z.object({
-  label: z.string(),
-  checked: z.boolean(),
-});
-
-const LevelDetailSchema = z.object({
-  checklist: z.array(ChecklistItemSchema),
-  text: z.string().max(500, "Text must be 500 characters or less.").optional(),
-});
-
-const ValueTypeDetailsSchema = z.object({
-  high: LevelDetailSchema,
-  mid: LevelDetailSchema,
-  low: LevelDetailSchema,
+// Schema for a single value type's input (e.g., for 'urgency')
+const ValueTypeInputSchema = z.object({
+  level: z.enum(['high', 'mid', 'low'], {
+    required_error: "Please select a level (High, Mid, or Low).",
+  }),
+  notes: z.string().max(500, "Notes must be 500 characters or less.").optional(),
 });
 
 export const valueTypeFormSchema = z.object({
-  urgency: ValueTypeDetailsSchema,
-  marketImpact: ValueTypeDetailsSchema,
-  strategic: ValueTypeDetailsSchema,
-  revenue: ValueTypeDetailsSchema,
-  cost: ValueTypeDetailsSchema,
+  urgency: ValueTypeInputSchema,
+  marketImpact: ValueTypeInputSchema,
+  strategic: ValueTypeInputSchema,
+  revenue: ValueTypeInputSchema,
+  cost: ValueTypeInputSchema,
   overallConsiderations: z.string().max(1000, "Overall considerations must be 1000 characters or less.").optional(),
 });
 

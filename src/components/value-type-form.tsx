@@ -1,10 +1,11 @@
+
 "use client";
 
 import type * as React from 'react';
-import { useForm, FormProvider, Controller } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { valueTypeFormSchema, type ValueTypeFormData } from './value-type-form-schema';
-import { VALUE_TYPES_CONFIG, type ValueCategoryKey, type ValueLevel, type ChecklistItemDefinition } from '@/config/value-types';
+import { VALUE_TYPES_CONFIG, type ValueCategoryKey, type LevelOption } from '@/config/value-types';
 import type { DetermineValueTypeInput } from '@/ai/flows/determine-value-type';
 
 import { Button } from '@/components/ui/button';
@@ -17,12 +18,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
 import { AlertCircle, Loader2 } from 'lucide-react';
 
 interface ValueTypeFormProps {
@@ -35,33 +33,24 @@ const getDefaultValues = (): ValueTypeFormData => {
   VALUE_TYPES_CONFIG.forEach(category => {
     const categoryKey = category.id as ValueCategoryKey;
     defaults[categoryKey] = {
-      high: {
-        checklist: category.levels.high.defaultChecklistItems.map(item => ({ label: item.label, checked: false })),
-        text: '',
-      },
-      mid: {
-        checklist: category.levels.mid.defaultChecklistItems.map(item => ({ label: item.label, checked: false })),
-        text: '',
-      },
-      low: {
-        checklist: category.levels.low.defaultChecklistItems.map(item => ({ label: item.label, checked: false })),
-        text: '',
-      },
+      // Default to 'mid' or undefined. Let's default to 'mid'.
+      // Zod schema will require a selection.
+      level: 'mid', 
+      notes: '',
     };
   });
   defaults.overallConsiderations = '';
   return defaults as ValueTypeFormData;
 };
 
-
 export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
   const form = useForm<ValueTypeFormData>({
     resolver: zodResolver(valueTypeFormSchema),
     defaultValues: getDefaultValues(),
+    mode: "onChange", // Show errors earlier
   });
 
   const handleFormSubmit = (data: ValueTypeFormData) => {
-    // Transform data to match DetermineValueTypeInput if necessary (already aligned)
     onSubmit(data as DetermineValueTypeInput);
   };
 
@@ -69,88 +58,86 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
         {VALUE_TYPES_CONFIG.map((category) => (
-          <Card key={category.id} className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center text-2xl font-semibold">
-                <category.icon className="mr-3 h-7 w-7 text-primary" />
+          <Card key={category.id} className="shadow-lg rounded-xl overflow-hidden">
+            <CardHeader className="bg-card">
+              <CardTitle className="flex items-center text-2xl font-semibold text-primary">
+                <category.icon className="mr-3 h-7 w-7" />
                 {category.label}
               </CardTitle>
-              <CardDescription>
-                Define the characteristics for {category.label.toLowerCase()}.
+              <CardDescription className="text-muted-foreground">
+                {category.categoryDescription}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="high" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 mb-4">
-                  {(['high', 'mid', 'low'] as ValueLevel[]).map(level => (
-                    <TabsTrigger key={level} value={level} className="capitalize data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                      {level} Impact
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                {(['high', 'mid', 'low'] as ValueLevel[]).map(level => (
-                  <TabsContent key={level} value={level}>
-                    <div className="space-y-6 p-1">
-                      <p className="text-sm text-muted-foreground">{category.levels[level].description}</p>
-                      <div className="space-y-3">
-                        <FormLabel className="text-base font-medium">Checklist</FormLabel>
-                        {category.levels[level].defaultChecklistItems.map((item, index) => (
-                          <FormField
-                            key={item.id}
-                            control={form.control}
-                            name={`${category.id}.${level}.checklist.${index}.checked` as any}
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm bg-background hover:bg-secondary/80 transition-colors">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal text-sm text-foreground cursor-pointer flex-grow">
-                                  {item.label}
-                                </FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
-                       <FormField
-                        control={form.control}
-                        name={`${category.id}.${level}.text` as any}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-medium">Additional Notes (Optional)</FormLabel>
+            <CardContent className="space-y-6 pt-2 pb-6 px-6">
+              <FormField
+                control={form.control}
+                name={`${category.id}.level` as const}
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel className="text-base font-semibold text-foreground">Select Impact Level</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-2"
+                      >
+                        {category.levelOptions.map((option: LevelOption) => (
+                          <FormItem 
+                            key={option.value} 
+                            className="flex items-center space-x-3 space-y-0 p-4 border rounded-lg shadow-sm hover:bg-secondary/50 transition-colors cursor-pointer data-[state=checked]:bg-primary/10 data-[state=checked]:border-primary"
+                            onClick={() => field.onChange(option.value)}
+                          >
                             <FormControl>
-                              <Textarea
-                                placeholder={`Specific details for ${level} impact regarding ${category.label.toLowerCase()}...`}
-                                className="resize-y min-h-[100px]"
-                                {...field}
-                              />
+                              <RadioGroupItem value={option.value} />
                             </FormControl>
-                             <FormMessage />
+                            <div className="flex-1">
+                              <FormLabel className="font-medium text-foreground capitalize cursor-pointer">
+                                {option.label}
+                              </FormLabel>
+                              <FormDescription className="text-sm text-muted-foreground">
+                                {option.description}
+                              </FormDescription>
+                            </div>
                           </FormItem>
-                        )}
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`${category.id}.notes` as const}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-semibold text-foreground">Additional Notes (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={`Any specific details or context for ${category.label.toLowerCase()}...`}
+                        className="resize-y min-h-[100px] bg-background focus:ring-primary focus:border-primary"
+                        {...field}
                       />
-                    </div>
-                  </TabsContent>
-                ))}
-              </Tabs>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
         ))}
 
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center text-2xl font-semibold">
-              <AlertCircle className="mr-3 h-7 w-7 text-primary" />
+        <Card className="shadow-lg rounded-xl overflow-hidden">
+          <CardHeader className="bg-card">
+            <CardTitle className="flex items-center text-2xl font-semibold text-primary">
+              <AlertCircle className="mr-3 h-7 w-7" />
               Overall Considerations
             </CardTitle>
-            <CardDescription>
-              Describe the potential consequences if this epic is not addressed.
+            <CardDescription className="text-muted-foreground">
+              What would happen if we don’t work on the epic right now?
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-2 pb-6 px-6">
             <FormField
               control={form.control}
               name="overallConsiderations"
@@ -159,8 +146,8 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
                   <FormLabel className="sr-only">Overall Considerations</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="What would happen if we don’t work on the epic right now?"
-                      className="resize-y min-h-[120px]"
+                      placeholder="Describe the potential consequences if this epic is not addressed..."
+                      className="resize-y min-h-[120px] bg-background focus:ring-primary focus:border-primary"
                       {...field}
                     />
                   </FormControl>
@@ -171,11 +158,11 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
           </CardContent>
         </Card>
 
-        <Button type="submit" className="w-full text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
+        <Button type="submit" className="w-full text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg shadow-md focus:ring-2 focus:ring-accent focus:ring-offset-2" disabled={isLoading}>
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Generating...
+              Generating Value Types...
             </>
           ) : (
             'Generate Value Types'
