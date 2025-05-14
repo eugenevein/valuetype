@@ -33,8 +33,6 @@ const getDefaultValues = (): ValueTypeFormData => {
   VALUE_TYPES_CONFIG.forEach(category => {
     const categoryKey = category.id as ValueCategoryKey;
     defaults[categoryKey] = {
-      // Default to 'mid' or undefined. Let's default to 'mid'.
-      // Zod schema will require a selection.
       level: 'mid', 
       notes: '',
     };
@@ -47,7 +45,7 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
   const form = useForm<ValueTypeFormData>({
     resolver: zodResolver(valueTypeFormSchema),
     defaultValues: getDefaultValues(),
-    mode: "onChange", // Show errors earlier
+    mode: "onChange",
   });
 
   const handleFormSubmit = (data: ValueTypeFormData) => {
@@ -114,7 +112,7 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
                     <FormLabel className="text-base font-semibold text-foreground">Why such value?</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder={`Explain your reasoning for selecting this value for ${category.label.toLowerCase()}...`}
+                        placeholder={`Explain your reasoning for ${category.label.toLowerCase()}. Keep this text compact.`}
                         className="resize-y min-h-[100px] bg-background focus:ring-primary focus:border-primary"
                         {...field}
                       />
@@ -146,7 +144,7 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
                   <FormLabel className="sr-only">Impact of not doing</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the potential consequences if this epic is not addressed..."
+                      placeholder="Describe potential consequences. Keep this text compact."
                       className="resize-y min-h-[120px] bg-background focus:ring-primary focus:border-primary"
                       {...field}
                     />
