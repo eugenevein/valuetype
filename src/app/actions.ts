@@ -10,6 +10,13 @@ export async function generateValueTypesAction(
     return { success: true, data: result };
   } catch (error) {
     console.error("Error determining value types:", error);
-    return { success: false, error: error instanceof Error ? error.message : "An unknown error occurred" };
+    let errorMessage = "An unknown error occurred while generating value types.";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      if (errorMessage.toLowerCase().includes("api key") || errorMessage.toLowerCase().includes("authentication") || errorMessage.toLowerCase().includes("permission denied")) {
+        errorMessage = `API Key or Authentication Error: ${errorMessage}. Please ensure your GOOGLE_API_KEY is correctly set in the .env file and that you have refreshed or restarted your development environment.`;
+      }
+    }
+    return { success: false, error: errorMessage };
   }
 }
