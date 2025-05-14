@@ -64,10 +64,10 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
     <Card className="mt-8 shadow-lg border-primary/10 max-w-xs mx-auto">
       <CardContent className="p-2">
         <div className="space-y-0">
-          {(Object.keys(results) as ValueCategoryKey[]).map(key => {
-            const categoryConfig = VALUE_TYPES_CONFIG.find(c => c.id === key);
+          {VALUE_TYPES_CONFIG.map(categoryConfig => {
+            const key = categoryConfig.id as ValueCategoryKey;
             const value = results[key];
-            if (!categoryConfig) return null;
+            if (!value) return null; // Should not happen if results are complete
 
             const Icon = categoryConfig.icon;
             const badgeStyle = getValueStyles(value);
