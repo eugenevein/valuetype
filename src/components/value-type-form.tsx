@@ -111,10 +111,10 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
                 name={`${category.id}.notes` as const}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base font-semibold text-foreground">Additional Notes (Optional)</FormLabel>
+                    <FormLabel className="text-base font-semibold text-foreground">Why such value?</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder={`Any specific details or context for ${category.label.toLowerCase()}...`}
+                        placeholder={`Explain your reasoning for selecting this value for ${category.label.toLowerCase()}...`}
                         className="resize-y min-h-[100px] bg-background focus:ring-primary focus:border-primary"
                         {...field}
                       />
