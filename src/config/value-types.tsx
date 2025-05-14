@@ -81,9 +81,9 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
       </>
     ),
     levelOptions: [
-      { value: 'high', label: 'High', description: 'Generates significant new revenue, substantially increases LTV, opens major new sales channels.' },
-      { value: 'mid', label: 'Mid', description: 'Improves conversion rates/AOV, reduces churn, enhances up-sell/cross-sell opportunities.' },
-      { value: 'low', label: 'Low', description: 'Indirect or long-term revenue potential, primarily non-revenue focused, no clear path to revenue impact.' },
+      { value: 'high', label: 'High', description: 'BC value > €1mio p.a.' },
+      { value: 'mid', label: 'Mid', description: '€500k < BC value < €1mio p.a.' },
+      { value: 'low', label: 'Low', description: 'BC value < €500k p.a.' },
     ],
   },
   {
