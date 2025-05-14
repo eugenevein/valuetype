@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from 'react';
@@ -10,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function HomePage() {
   const [results, setResults] = React.useState<DetermineValueTypeOutput | null>(null);
+  const [inputDataForDisplay, setInputDataForDisplay] = React.useState<DetermineValueTypeInput | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const { toast } = useToast();
@@ -18,11 +20,13 @@ export default function HomePage() {
     setIsLoading(true);
     setError(null);
     setResults(null);
+    setInputDataForDisplay(null);
 
     try {
       const response = await generateValueTypesAction(data);
       if (response.success && response.data) {
         setResults(response.data);
+        setInputDataForDisplay(data); // Store input data for display
         toast({
           title: "Success!",
           description: "Value types generated successfully.",
@@ -55,9 +59,10 @@ export default function HomePage() {
       <main className="container mx-auto px-4 py-8 flex-grow">
         <div className="max-w-4xl mx-auto">
           <ValueTypeForm onSubmit={handleSubmit} isLoading={isLoading} />
+          {/* Pass inputData to ValueTypeResultDisplay */}
           {(results || isLoading || error) && (
              <div className="mt-12">
-                <ValueTypeResultDisplay results={results} isLoading={isLoading} error={error} />
+                <ValueTypeResultDisplay results={results} inputData={inputDataForDisplay} isLoading={isLoading} error={error} />
              </div>
           )}
         </div>
