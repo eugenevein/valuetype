@@ -43,7 +43,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     categoryDescription: 'Evaluate the epic\'s potential effect on your market position and brand.',
     levelOptions: [
       { value: 'high', label: 'High', description: 'Addresses large market need, potential to disrupt competitors, enhances brand significantly.' },
-      { value: 'mid', label: 'Medium', description: 'Targets valuable niche, offers some competitive advantage, improves customer perception moderately.' },
+      { value: 'mid', label: 'Mid', description: 'Targets valuable niche, offers some competitive advantage, improves customer perception moderately.' },
       { value: 'low', label: 'Low', description: 'Maintains current position, limited differentiation, internal improvement with little external visibility.' },
     ],
   },
@@ -54,7 +54,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     categoryDescription: 'Determine how well the epic aligns with and supports core company goals.',
     levelOptions: [
       { value: 'high', label: 'High', description: 'Directly supports key company OKRs/goals, unlocks future strategic opportunities, mitigates major strategic risk.' },
-      { value: 'mid', label: 'Medium', description: 'Aligns with departmental goals, provides incremental strategic progress, reduces minor strategic risks.' },
+      { value: 'mid', label: 'Mid', description: 'Aligns with departmental goals, provides incremental strategic progress, reduces minor strategic risks.' },
       { value: 'low', label: 'Low', description: 'Opportunistic or tactical, no clear link to current strategy, could be pursued independently.' },
     ],
   },
@@ -65,7 +65,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     categoryDescription: 'Assess the epic\'s potential to directly or indirectly increase revenue.',
     levelOptions: [
       { value: 'high', label: 'High', description: 'Generates significant new revenue, substantially increases LTV, opens major new sales channels.' },
-      { value: 'mid', label: 'Medium', description: 'Improves conversion rates/AOV, reduces churn, enhances up-sell/cross-sell opportunities.' },
+      { value: 'mid', label: 'Mid', description: 'Improves conversion rates/AOV, reduces churn, enhances up-sell/cross-sell opportunities.' },
       { value: 'low', label: 'Low', description: 'Indirect or long-term revenue potential, primarily non-revenue focused, no clear path to revenue impact.' },
     ],
   },
@@ -76,7 +76,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     categoryDescription: 'Evaluate the epic\'s potential for reducing operational or capital expenditure.',
     levelOptions: [
       { value: 'high', label: 'High', description: 'Drastically reduces OpEx, avoids substantial CapEx, greatly improves resource efficiency.' },
-      { value: 'mid', label: 'Medium', description: 'Reduces some operational costs, optimizes processes for cost-effectiveness, avoids minor future costs.' },
+      { value: 'mid', label: 'Mid', description: 'Reduces some operational costs, optimizes processes for cost-effectiveness, avoids minor future costs.' },
       { value: 'low', label: 'Low', description: 'Cost impact negligible or uncertain, may involve upfront costs with unclear savings, not cost-focused.' },
     ],
   },
