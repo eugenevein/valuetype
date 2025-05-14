@@ -131,7 +131,7 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
           <CardHeader className="bg-card">
             <CardTitle className="flex items-center text-2xl font-semibold text-primary">
               <AlertCircle className="mr-3 h-7 w-7" />
-              Overall Considerations
+              Impact of Not Doing
             </CardTitle>
             <CardDescription className="text-muted-foreground">
               What would happen if we don’t work on the epic right now?
@@ -143,7 +143,7 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
               name="overallConsiderations"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="sr-only">Overall Considerations</FormLabel>
+                  <FormLabel className="sr-only">Impact of not doing</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Describe the potential consequences if this epic is not addressed..."
