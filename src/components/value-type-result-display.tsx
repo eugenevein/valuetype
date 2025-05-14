@@ -39,19 +39,19 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
   if (isLoading) {
     return (
       <Card className="mt-8 shadow-lg border-primary/10 max-w-xs mx-auto">
-        <CardHeader className="bg-primary/5 rounded-t-lg py-4">
-          <CardTitle className="text-xl font-semibold text-center text-primary">
+        <CardHeader className="bg-primary/5 rounded-t-lg py-3">
+          <CardTitle className="text-lg font-semibold text-center text-primary">
             Generating Analysis...
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 space-y-3">
+        <CardContent className="p-3 space-y-2">
           {VALUE_TYPES_CONFIG.map(category => (
-            <div key={`skeleton-${category.id}`} className="py-2.5 flex items-center justify-between border-b last:border-b-0 animate-pulse">
-              <div className="flex items-center">
-                <Skeleton className="h-5 w-5 mr-2.5 rounded-full bg-muted-foreground/20" />
-                <Skeleton className="h-4 w-20 bg-muted-foreground/20" />
+            <div key={`skeleton-${category.id}`} className="py-2 flex items-center border-b last:border-b-0 animate-pulse">
+              <div className="flex items-center flex-grow">
+                <Skeleton className="h-4 w-4 mr-2 rounded-full bg-muted-foreground/20" />
+                <Skeleton className="h-3 w-20 bg-muted-foreground/20" />
               </div>
-              <Skeleton className="h-6 w-14 rounded-md bg-muted-foreground/20" />
+              <Skeleton className="h-5 w-12 rounded-md bg-muted-foreground/20 ml-2" />
             </div>
           ))}
         </CardContent>
@@ -81,13 +81,13 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
 
   return (
     <Card className="mt-8 shadow-lg border-primary/10 max-w-xs mx-auto">
-      <CardHeader className="bg-primary/5 rounded-t-lg py-4">
-        <CardTitle className="text-xl font-semibold text-center text-primary">
+      <CardHeader className="bg-primary/5 rounded-t-lg py-3">
+        <CardTitle className="text-lg font-semibold text-center text-primary">
           Value Analysis
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4">
-        <div className="space-y-0"> {/* Removed space-y-4, border-b will handle spacing */}
+      <CardContent className="p-3">
+        <div className="space-y-0">
           {(Object.keys(results) as ValueCategoryKey[]).map(key => {
             const categoryConfig = VALUE_TYPES_CONFIG.find(c => c.id === key);
             const value = results[key];
@@ -97,14 +97,14 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
             const styles = getValueStyles(value);
 
             return (
-              <div key={key} className="py-2.5 flex items-center justify-between border-b last:border-b-0">
-                <div className="flex items-center">
-                  <Icon className="mr-2.5 h-5 w-5 text-muted-foreground" />
-                  <span className="text-sm font-medium text-card-foreground">{categoryConfig.label}</span>
+              <div key={key} className="py-2 flex items-center border-b last:border-b-0">
+                <div className="flex items-center flex-grow">
+                  <Icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-medium text-card-foreground">{categoryConfig.label}</span>
                 </div>
                 <Badge
                   variant="default"
-                  className={`capitalize text-xs font-semibold px-2 py-0.5 border ${styles.badge}`}
+                  className={`capitalize text-xs font-semibold px-2 py-0.5 border ml-2 ${styles.badge}`}
                 >
                   {value}
                 </Badge>
