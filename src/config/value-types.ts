@@ -1,27 +1,25 @@
 
+import React from 'react'; // Added React import for JSX
 import type { LucideIcon } from 'lucide-react';
 import { TimerIcon, TrendingUpIcon, TargetIcon, CircleDollarSignIcon, BanknoteIcon } from 'lucide-react';
 import type { DetermineValueTypeInput } from '@/ai/flows/determine-value-type';
+import type { ReactNode } from 'react';
 
 export type ValueLevel = 'high' | 'mid' | 'low';
 export type ValueCategoryKey = Exclude<keyof DetermineValueTypeInput, 'overallConsiderations'>;
 
-// This type might change based on how DetermineValueTypeInput is reshaped.
-// For now, assuming DetermineValueTypeInput will have keys like 'urgency', 'marketImpact', etc.
-// And overallConsiderations. This ValueCategoryKey will represent 'urgency', 'marketImpact', etc.
-
 export interface LevelOption {
   value: ValueLevel;
-  label: string; // e.g., "High Impact"
-  description: string; // Description for this specific level to display next to radio button
+  label: string;
+  description: string;
 }
 
 export interface ValueTypeConfig {
   id: ValueCategoryKey;
-  label: string; // e.g., "Level of Urgency" - for the Card Title
+  label: string;
   icon: LucideIcon;
-  categoryDescription: string; // General description for the category - for CardDescription
-  levelOptions: LevelOption[]; // To generate RadioGroup options
+  categoryDescription: ReactNode;
+  levelOptions: LevelOption[];
 }
 
 export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
@@ -29,7 +27,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     id: 'urgency',
     label: 'Level of Urgency',
     icon: TimerIcon,
-    categoryDescription: '', // Ensure this is empty or not set if no description is desired
+    categoryDescription: '',
     levelOptions: [
       { value: 'high', label: 'High', description: 'Now - has to be resolved immediately' },
       { value: 'mid', label: 'Mid', description: 'Soon - has to be resolved in next 6 months' },
@@ -40,7 +38,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     id: 'marketImpact',
     label: 'Market Impact',
     icon: TrendingUpIcon,
-    categoryDescription: '', // Ensure this is empty or not set if no description is desired
+    categoryDescription: '',
     levelOptions: [
       { value: 'high', label: 'High', description: 'Epic covering issues of global network.' },
       { value: 'mid', label: 'Mid', description: 'Epic covering issues of local network (>1 Business region but not global, e.g. North America only).' },
@@ -62,7 +60,26 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     id: 'revenue',
     label: 'Maximise Revenue',
     icon: CircleDollarSignIcon,
-    categoryDescription: '(Represented by business case)', 
+    categoryDescription: (
+      <>
+        <p className="text-sm">(Represented by business case)</p>
+        <div className="mt-2 text-xs space-y-1">
+          <p className="font-medium">Maintain and Increase of revenue compared to status quo (e.g.)</p>
+          <ul className="list-disc list-outside pl-5 space-y-0.5">
+            <li>Market entries (platform business, etc.)</li>
+            <li>Increase due to better conversion rate</li>
+            <li>Higher customer retention</li>
+            <li>Advanced pricing possibilities (new/ improved features..)</li>
+          </ul>
+          <p className="font-medium pt-1">Avoid loss of current revenues in the future (e.g.)</p>
+          <ul className="list-disc list-outside pl-5 space-y-0.5">
+            <li>Compete against features of competitors</li>
+            <li>Prevent cancellation of contracts with partners (e.g. integration/TSPs, cost consideration)</li>
+            <li>Legislation issues (regional markets)</li>
+          </ul>
+        </div>
+      </>
+    ),
     levelOptions: [
       { value: 'high', label: 'High', description: 'Generates significant new revenue, substantially increases LTV, opens major new sales channels.' },
       { value: 'mid', label: 'Mid', description: 'Improves conversion rates/AOV, reduces churn, enhances up-sell/cross-sell opportunities.' },
@@ -73,7 +90,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     id: 'cost',
     label: 'Minimize Cost',
     icon: BanknoteIcon,
-    categoryDescription: '', // Ensure this is empty or not set if no description is desired
+    categoryDescription: '',
     levelOptions: [
       { value: 'high', label: 'High', description: 'Drastically reduces OpEx, avoids substantial CapEx, greatly improves resource efficiency.' },
       { value: 'mid', label: 'Mid', description: 'Reduces some operational costs, optimizes processes for cost-effectiveness, avoids minor future costs.' },
@@ -81,4 +98,3 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     ],
   },
 ];
-
