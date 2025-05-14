@@ -110,9 +110,9 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
       </>
     ),
     levelOptions: [
-      { value: 'high', label: 'High', description: 'Drastically reduces OpEx, avoids substantial CapEx, greatly improves resource efficiency.' },
-      { value: 'mid', label: 'Mid', description: 'Reduces some operational costs, optimizes processes for cost-effectiveness, avoids minor future costs.' },
-      { value: 'low', label: 'Low', description: 'Cost impact negligible or uncertain, may involve upfront costs with unclear savings, not cost-focused.' },
+      { value: 'high', label: 'High', description: 'Technical (Affecting functionalities)' },
+      { value: 'mid', label: 'Mid', description: 'Improve Automation (Reduce existing costs)' },
+      { value: 'low', label: 'Low', description: 'Technical (Prevent future costs)' },
     ],
   },
 ];
