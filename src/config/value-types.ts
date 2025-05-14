@@ -62,7 +62,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     id: 'revenue',
     label: 'Maximise Revenue',
     icon: CircleDollarSignIcon,
-    categoryDescription: '', // Ensure this is empty or not set if no description is desired
+    categoryDescription: '(Represented by business case)', 
     levelOptions: [
       { value: 'high', label: 'High', description: 'Generates significant new revenue, substantially increases LTV, opens major new sales channels.' },
       { value: 'mid', label: 'Mid', description: 'Improves conversion rates/AOV, reduces churn, enhances up-sell/cross-sell opportunities.' },
