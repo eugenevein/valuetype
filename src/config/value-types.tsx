@@ -18,7 +18,7 @@ export interface ValueTypeConfig {
   id: ValueCategoryKey;
   label: string;
   icon: LucideIcon;
-  categoryDescription: ReactNode;
+  categoryDescription?: ReactNode; // Made optional as not all categories have it
   levelOptions: LevelOption[];
 }
 
@@ -65,14 +65,14 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
         <p className="text-sm">(Represented by business case)</p>
         <div className="mt-2 text-xs space-y-1">
           <p className="font-medium">Maintain and Increase of revenue compared to status quo (e.g.)</p>
-          <ul className="list-disc list-outside pl-5 space-y-0.5">
+          <ul className="list-disc list-outside pl-6 space-y-0.5"> {/* Increased pl-5 to pl-6 */}
             <li>Market entries (platform business, etc.)</li>
             <li>Increase due to better conversion rate</li>
             <li>Higher customer retention</li>
             <li>Advanced pricing possibilities (new/ improved features..)</li>
           </ul>
           <p className="font-medium pt-1">Avoid loss of current revenues in the future (e.g.)</p>
-          <ul className="list-disc list-outside pl-5 space-y-0.5">
+          <ul className="list-disc list-outside pl-6 space-y-0.5"> {/* Increased pl-5 to pl-6 */}
             <li>Compete against features of competitors</li>
             <li>Prevent cancellation of contracts with partners (e.g. integration/TSPs, cost consideration)</li>
             <li>Legislation issues (regional markets)</li>
