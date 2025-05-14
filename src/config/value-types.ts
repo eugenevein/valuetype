@@ -31,9 +31,9 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     icon: TimerIcon,
     categoryDescription: 'Assess the time-sensitivity and critical nature of the epic.',
     levelOptions: [
-      { value: 'high', label: 'High', description: 'Critical, time-sensitive, blocks other work, addresses an immediate major problem.' },
-      { value: 'mid', label: 'Medium', description: 'Important, needs to be done in the near future, causes noticeable friction if delayed.' },
-      { value: 'low', label: 'Low', description: 'No hard deadline, impact of delay is minimal, can be deferred.' },
+      { value: 'high', label: 'High', description: 'Now - has to be resolved immediately' },
+      { value: 'mid', label: 'Medium', description: 'Soon - has to be resolved in next 6 months' },
+      { value: 'low', label: 'Low', description: 'Later - has to be resolved in more than 6 months' },
     ],
   },
   {
@@ -81,3 +81,4 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     ],
   },
 ];
+
