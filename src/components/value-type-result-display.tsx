@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { DetermineValueTypeOutput } from '@/ai/flows/determine-value-type';
@@ -13,16 +14,28 @@ interface ValueTypeResultDisplayProps {
   error?: string | null;
 }
 
-const getBackgroundColor = (value: 'high' | 'mid' | 'low') => {
+const getValueStyles = (value: 'high' | 'mid' | 'low') => {
   switch (value) {
     case 'high':
-      return 'bg-red-200 text-red-800 border-red-400';
+      return {
+        card: 'bg-red-200 border-red-400 text-red-900',
+        badge: 'bg-red-500 text-white border-red-700',
+      };
     case 'mid':
-      return 'bg-yellow-200 text-yellow-800 border-yellow-400';
+      return {
+        card: 'bg-yellow-100 border-yellow-300 text-yellow-900',
+        badge: 'bg-yellow-400 text-yellow-900 border-yellow-600',
+      };
     case 'low':
-      return 'bg-green-200 text-green-800 border-green-400';
-    default:
-      return 'bg-secondary text-secondary-foreground border-border';
+      return {
+        card: 'bg-green-100 border-green-300 text-green-900',
+        badge: 'bg-green-500 text-white border-green-700',
+      };
+    default: // Should not happen with strict typing, but as a fallback
+      return {
+        card: 'bg-card border-border text-card-foreground',
+        badge: 'bg-secondary text-secondary-foreground border-transparent',
+      };
   }
 };
 
@@ -87,16 +100,21 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
             if (!categoryConfig) return null;
 
             const Icon = categoryConfig.icon;
+            const styles = getValueStyles(value);
+
             return (
-              <Card key={key} className={`shadow-md hover:shadow-lg transition-shadow duration-300 border ${getBackgroundColor(value)}`}>
+              <Card key={key} className={`shadow-md hover:shadow-lg transition-shadow duration-300 border ${styles.card}`}>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center text-xl font-semibold">
-                    <Icon className="mr-3 h-6 w-6" />
+                    <Icon className="mr-3 h-6 w-6" /> {/* Icon inherits text color from styles.card */}
                     {categoryConfig.label}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Badge variant="outline" className={`capitalize text-lg font-medium px-4 py-1 border-2 ${getBackgroundColor(value)}`}>
+                  <Badge 
+                    variant="default" // Use default variant and override with specific styles
+                    className={`capitalize text-lg font-medium px-4 py-1 border-2 ${styles.badge}`}
+                  >
                     {value} Impact
                   </Badge>
                 </CardContent>
