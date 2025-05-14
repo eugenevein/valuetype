@@ -16,7 +16,7 @@ import {z} from 'genkit';
 // Input schema for a single value type category provided by the user
 const UserValueAssessmentSchema = z.object({
   level: z.enum(['high', 'mid', 'low']).describe("User's selected preliminary level for this category."),
-  notes: z.string().optional().describe("User's additional notes for this category."),
+  notes: z.string().describe("User's additional notes for this category. This field is mandatory."),
 });
 
 // Input schema for the AI flow
@@ -28,8 +28,7 @@ const DetermineValueTypeInputSchema = z.object({
   cost: UserValueAssessmentSchema.describe('User assessment for Minimize Cost.'),
   overallConsiderations: z
     .string()
-    .optional()
-    .describe('Overall considerations or consequences if the epic is not worked on.'),
+    .describe('Overall considerations or consequences if the epic is not worked on. This field is mandatory.'),
 });
 
 export type DetermineValueTypeInput = z.infer<typeof DetermineValueTypeInputSchema>;
@@ -58,7 +57,7 @@ const prompt = ai.definePrompt({
   input: {schema: DetermineValueTypeInputSchema},
   output: {schema: DetermineValueTypeOutputSchema},
   prompt: `You are an AI assistant helping to finalize the value type assessment for a project or epic.
-The user has provided an initial assessment for each category by selecting a level (high, mid, or low) and optional notes.
+The user has provided an initial assessment for each category by selecting a level (high, mid, or low) and mandatory notes.
 Your task is to analyze all provided information, including the user's selections, notes, and overall considerations, to determine the most appropriate final value type (high, mid, or low) for each of the five categories.
 
 User's Initial Assessment:
@@ -97,4 +96,3 @@ const determineValueTypeFlow = ai.defineFlow(
     return output!;
   }
 );
-
