@@ -32,7 +32,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     categoryDescription: 'Assess the time-sensitivity and critical nature of the epic.',
     levelOptions: [
       { value: 'high', label: 'High', description: 'Now - has to be resolved immediately' },
-      { value: 'mid', label: 'Medium', description: 'Soon - has to be resolved in next 6 months' },
+      { value: 'mid', label: 'Mid', description: 'Soon - has to be resolved in next 6 months' },
       { value: 'low', label: 'Low', description: 'Later - has to be resolved in more than 6 months' },
     ],
   },
