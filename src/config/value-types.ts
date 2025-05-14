@@ -53,9 +53,9 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     icon: TargetIcon,
     categoryDescription: 'Strategic topics which cannot only be allocated to a EUR impact (e.g. because of Governance, Basis for future business cases, etc.) → this should only be used for exceptions',
     levelOptions: [
-      { value: 'high', label: 'High', description: 'Directly supports key company OKRs/goals, unlocks future strategic opportunities, mitigates major strategic risk.' },
-      { value: 'mid', label: 'Mid', description: 'Aligns with departmental goals, provides incremental strategic progress, reduces minor strategic risks.' },
-      { value: 'low', label: 'Low', description: 'Opportunistic or tactical, no clear link to current strategy, could be pursued independently.' },
+      { value: 'high', label: 'High', description: 'Strategic decision (C-level request) Improve Scalability (New markets, more KM expansion)' },
+      { value: 'mid', label: 'Mid', description: 'External dependencies (Cross-Domain level)' },
+      { value: 'low', label: 'Low', description: 'Internal dependencies (Domain level)' },
     ],
   },
   {
@@ -81,3 +81,4 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     ],
   },
 ];
+
