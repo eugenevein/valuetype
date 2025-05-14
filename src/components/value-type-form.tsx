@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'; // Added CardDescription
 import { AlertCircle, Loader2 } from 'lucide-react';
 
 interface ValueTypeFormProps {
@@ -62,6 +62,11 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
                 <category.icon className="mr-3 h-7 w-7" />
                 {category.label}
               </CardTitle>
+              {category.categoryDescription && (
+                <CardDescription className="text-muted-foreground pt-1 text-sm">
+                  {category.categoryDescription}
+                </CardDescription>
+              )}
             </CardHeader>
             <CardContent className="space-y-6 pt-2 pb-6 px-6">
               <FormField
@@ -128,12 +133,7 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
               <AlertCircle className="mr-3 h-7 w-7" />
               Impact of Not Doing
             </CardTitle>
-            {/* The CardDescription that was causing the error was here. It has been removed.
-                The original line was:
-            <CardDescription className="text-muted-foreground">
-              What would happen if we don’t work on the epic right now?
-            </CardDescription>
-            */}
+            {/* Removed the previous CardDescription here as it was causing an error and is not specifically requested now */}
           </CardHeader>
           <CardContent className="pt-2 pb-6 px-6">
             <FormField

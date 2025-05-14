@@ -29,7 +29,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     id: 'urgency',
     label: 'Level of Urgency',
     icon: TimerIcon,
-    categoryDescription: 'Assess the time-sensitivity and critical nature of the epic.',
+    categoryDescription: '', // Ensure this is empty or not set if no description is desired
     levelOptions: [
       { value: 'high', label: 'High', description: 'Now - has to be resolved immediately' },
       { value: 'mid', label: 'Mid', description: 'Soon - has to be resolved in next 6 months' },
@@ -40,7 +40,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     id: 'marketImpact',
     label: 'Market Impact',
     icon: TrendingUpIcon,
-    categoryDescription: 'Evaluate the epic\'s potential effect on your market position and brand.',
+    categoryDescription: '', // Ensure this is empty or not set if no description is desired
     levelOptions: [
       { value: 'high', label: 'High', description: 'Epic covering issues of global network.' },
       { value: 'mid', label: 'Mid', description: 'Epic covering issues of local network (>1 Business region but not global, e.g. North America only).' },
@@ -51,7 +51,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     id: 'strategic',
     label: 'Strategic',
     icon: TargetIcon,
-    categoryDescription: 'Determine how well the epic aligns with and supports core company goals.',
+    categoryDescription: 'Strategic topics which cannot only be allocated to a EUR impact (e.g. because of Governance, Basis for future business cases, etc.) → this should only be used for exceptions',
     levelOptions: [
       { value: 'high', label: 'High', description: 'Directly supports key company OKRs/goals, unlocks future strategic opportunities, mitigates major strategic risk.' },
       { value: 'mid', label: 'Mid', description: 'Aligns with departmental goals, provides incremental strategic progress, reduces minor strategic risks.' },
@@ -62,7 +62,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     id: 'revenue',
     label: 'Maximise Revenue',
     icon: CircleDollarSignIcon,
-    categoryDescription: 'Assess the epic\'s potential to directly or indirectly increase revenue.',
+    categoryDescription: '', // Ensure this is empty or not set if no description is desired
     levelOptions: [
       { value: 'high', label: 'High', description: 'Generates significant new revenue, substantially increases LTV, opens major new sales channels.' },
       { value: 'mid', label: 'Mid', description: 'Improves conversion rates/AOV, reduces churn, enhances up-sell/cross-sell opportunities.' },
@@ -73,7 +73,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     id: 'cost',
     label: 'Minimize Cost',
     icon: BanknoteIcon,
-    categoryDescription: 'Evaluate the epic\'s potential for reducing operational or capital expenditure.',
+    categoryDescription: '', // Ensure this is empty or not set if no description is desired
     levelOptions: [
       { value: 'high', label: 'High', description: 'Drastically reduces OpEx, avoids substantial CapEx, greatly improves resource efficiency.' },
       { value: 'mid', label: 'Mid', description: 'Reduces some operational costs, optimizes processes for cost-effectiveness, avoids minor future costs.' },
@@ -81,4 +81,3 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     ],
   },
 ];
-
