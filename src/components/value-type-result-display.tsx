@@ -3,7 +3,7 @@
 
 import type { DetermineValueTypeOutput } from '@/ai/flows/determine-value-type';
 import { VALUE_TYPES_CONFIG, type ValueCategoryKey } from '@/config/value-types';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertTriangle } from 'lucide-react';
@@ -17,21 +17,13 @@ interface ValueTypeResultDisplayProps {
 const getValueStyles = (value: 'high' | 'mid' | 'low') => {
   switch (value) {
     case 'high':
-      return {
-        badge: 'bg-red-500 hover:bg-red-500/90 text-white border-red-700',
-      };
+      return 'bg-red-500 hover:bg-red-500/90 text-white border-red-700';
     case 'mid':
-      return {
-        badge: 'bg-yellow-400 hover:bg-yellow-400/90 text-yellow-900 border-yellow-600',
-      };
+      return 'bg-yellow-400 hover:bg-yellow-400/90 text-yellow-900 border-yellow-600';
     case 'low':
-      return {
-        badge: 'bg-green-500 hover:bg-green-500/90 text-white border-green-700',
-      };
+      return 'bg-green-500 hover:bg-green-500/90 text-white border-green-700';
     default:
-      return {
-        badge: 'bg-secondary text-secondary-foreground border-transparent',
-      };
+      return 'bg-secondary text-secondary-foreground border-transparent';
   }
 };
 
@@ -39,11 +31,6 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
   if (isLoading) {
     return (
       <Card className="mt-8 shadow-lg border-primary/10 max-w-xs mx-auto">
-        <CardHeader className="bg-primary/5 rounded-t-lg py-2">
-          {/* <CardTitle className="text-sm font-semibold text-center text-primary">
-            Generating Analysis...
-          </CardTitle> */}
-        </CardHeader>
         <CardContent className="p-2 space-y-1">
           {VALUE_TYPES_CONFIG.map(category => (
             <div key={`skeleton-${category.id}`} className="py-1.5 flex items-center border-b last:border-b-0 animate-pulse">
@@ -62,12 +49,6 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
   if (error) {
     return (
        <Card className="mt-8 shadow-lg border-destructive max-w-xs mx-auto">
-        <CardHeader className="py-2">
-          {/* <CardTitle className="text-sm font-semibold text-destructive flex items-center justify-center">
-            <AlertTriangle className="mr-1.5 h-4 w-4" />
-            Error
-          </CardTitle> */}
-        </CardHeader>
         <CardContent className="p-2">
           <p className="text-destructive-foreground bg-destructive/10 p-2 rounded-md text-xs">{error}</p>
         </CardContent>
@@ -81,11 +62,6 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
 
   return (
     <Card className="mt-8 shadow-lg border-primary/10 max-w-xs mx-auto">
-      <CardHeader className="bg-primary/5 rounded-t-lg py-2">
-        {/* <CardTitle className="text-sm font-semibold text-center text-primary">
-          Value Analysis
-        </CardTitle> */}
-      </CardHeader>
       <CardContent className="p-2">
         <div className="space-y-0">
           {(Object.keys(results) as ValueCategoryKey[]).map(key => {
@@ -94,7 +70,7 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
             if (!categoryConfig) return null;
 
             const Icon = categoryConfig.icon;
-            const styles = getValueStyles(value);
+            const badgeStyle = getValueStyles(value);
 
             return (
               <div key={key} className="py-1.5 flex items-center border-b last:border-b-0">
@@ -104,7 +80,7 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
                 </div>
                 <Badge
                   variant="default"
-                  className={`capitalize text-xs font-semibold px-1.5 py-0.5 border ml-1.5 ${styles.badge}`}
+                  className={`capitalize text-xs font-semibold px-1.5 py-0.5 border ml-1.5 ${badgeStyle}`}
                 >
                   {value}
                 </Badge>
