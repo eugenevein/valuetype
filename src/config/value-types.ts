@@ -42,9 +42,9 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     icon: TrendingUpIcon,
     categoryDescription: 'Evaluate the epic\'s potential effect on your market position and brand.',
     levelOptions: [
-      { value: 'high', label: 'High', description: 'Epic covering issues of Global Network.' },
-      { value: 'mid', label: 'Mid', description: 'Epic covering issues of Local Network (>1 Business region but not global, e.g. North America only).' },
-      { value: 'low', label: 'Low', description: 'Epic covering issues of Local Network (1 Business region).' },
+      { value: 'high', label: 'High', description: 'Epic covering issues of global network.' },
+      { value: 'mid', label: 'Mid', description: 'Epic covering issues of local network (>1 Business region but not global, e.g. North America only).' },
+      { value: 'low', label: 'Low', description: 'Epic covering issues of local network (1 Business region).' },
     ],
   },
   {
