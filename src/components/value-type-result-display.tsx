@@ -18,26 +18,18 @@ const getValueStyles = (value: 'high' | 'mid' | 'low') => {
   switch (value) {
     case 'high':
       return {
-        itemBg: 'bg-red-100 border-red-300',
-        itemText: 'text-red-900',
         badge: 'bg-red-500 hover:bg-red-500/90 text-white border-red-700',
       };
     case 'mid':
       return {
-        itemBg: 'bg-yellow-100 border-yellow-300',
-        itemText: 'text-yellow-900',
         badge: 'bg-yellow-400 hover:bg-yellow-400/90 text-yellow-900 border-yellow-600',
       };
     case 'low':
       return {
-        itemBg: 'bg-green-100 border-green-300',
-        itemText: 'text-green-900',
         badge: 'bg-green-500 hover:bg-green-500/90 text-white border-green-700',
       };
     default:
       return {
-        itemBg: 'bg-card border-border',
-        itemText: 'text-card-foreground',
         badge: 'bg-secondary text-secondary-foreground border-transparent',
       };
   }
@@ -46,20 +38,20 @@ const getValueStyles = (value: 'high' | 'mid' | 'low') => {
 export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeResultDisplayProps) {
   if (isLoading) {
     return (
-      <Card className="mt-10 shadow-xl border-2 border-primary/20 max-w-md mx-auto">
-        <CardHeader className="bg-primary/5 rounded-t-lg">
-          <CardTitle className="text-3xl font-bold text-center text-primary tracking-tight">
+      <Card className="mt-8 shadow-lg border-primary/10 max-w-xs mx-auto">
+        <CardHeader className="bg-primary/5 rounded-t-lg py-4">
+          <CardTitle className="text-xl font-semibold text-center text-primary">
             Generating Analysis...
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 md:p-8 space-y-4">
+        <CardContent className="p-4 space-y-3">
           {VALUE_TYPES_CONFIG.map(category => (
-            <div key={`skeleton-${category.id}`} className="p-4 rounded-lg shadow-md bg-muted flex items-center justify-between animate-pulse">
+            <div key={`skeleton-${category.id}`} className="py-2.5 flex items-center justify-between border-b last:border-b-0 animate-pulse">
               <div className="flex items-center">
-                <Skeleton className="h-6 w-6 mr-3 rounded-full bg-muted-foreground/20" />
-                <Skeleton className="h-5 w-24 bg-muted-foreground/20" />
+                <Skeleton className="h-5 w-5 mr-2.5 rounded-full bg-muted-foreground/20" />
+                <Skeleton className="h-4 w-20 bg-muted-foreground/20" />
               </div>
-              <Skeleton className="h-7 w-20 rounded-md bg-muted-foreground/20" />
+              <Skeleton className="h-6 w-14 rounded-md bg-muted-foreground/20" />
             </div>
           ))}
         </CardContent>
@@ -69,15 +61,15 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
 
   if (error) {
     return (
-       <Card className="mt-10 shadow-lg border-destructive max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold text-destructive flex items-center justify-center">
-            <AlertTriangle className="mr-2 h-6 w-6" />
-            Error Generating Results
+       <Card className="mt-8 shadow-lg border-destructive max-w-xs mx-auto">
+        <CardHeader className="py-3">
+          <CardTitle className="text-lg font-semibold text-destructive flex items-center justify-center">
+            <AlertTriangle className="mr-2 h-5 w-5" />
+            Error
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-destructive-foreground bg-destructive/10 p-4 rounded-md text-sm">{error}</p>
+        <CardContent className="p-3">
+          <p className="text-destructive-foreground bg-destructive/10 p-3 rounded-md text-xs">{error}</p>
         </CardContent>
       </Card>
     );
@@ -88,14 +80,14 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
   }
 
   return (
-    <Card className="mt-10 shadow-xl border-2 border-primary/20 max-w-md mx-auto">
-      <CardHeader className="bg-primary/5 rounded-t-lg">
-        <CardTitle className="text-3xl font-bold text-center text-primary tracking-tight">
-          Value Type Analysis
+    <Card className="mt-8 shadow-lg border-primary/10 max-w-xs mx-auto">
+      <CardHeader className="bg-primary/5 rounded-t-lg py-4">
+        <CardTitle className="text-xl font-semibold text-center text-primary">
+          Value Analysis
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-6 md:p-8">
-        <div className="space-y-4">
+      <CardContent className="p-4">
+        <div className="space-y-0"> {/* Removed space-y-4, border-b will handle spacing */}
           {(Object.keys(results) as ValueCategoryKey[]).map(key => {
             const categoryConfig = VALUE_TYPES_CONFIG.find(c => c.id === key);
             const value = results[key];
@@ -105,16 +97,16 @@ export function ValueTypeResultDisplay({ results, isLoading, error }: ValueTypeR
             const styles = getValueStyles(value);
 
             return (
-              <div key={key} className={`p-4 rounded-lg shadow-md flex items-center justify-between border ${styles.itemBg} ${styles.itemText}`}>
+              <div key={key} className="py-2.5 flex items-center justify-between border-b last:border-b-0">
                 <div className="flex items-center">
-                  <Icon className="mr-3 h-6 w-6" />
-                  <span className="text-lg font-semibold">{categoryConfig.label}</span>
+                  <Icon className="mr-2.5 h-5 w-5 text-muted-foreground" />
+                  <span className="text-sm font-medium text-card-foreground">{categoryConfig.label}</span>
                 </div>
                 <Badge
                   variant="default"
-                  className={`capitalize text-md font-semibold px-3 py-1.5 border-2 ${styles.badge}`}
+                  className={`capitalize text-xs font-semibold px-2 py-0.5 border ${styles.badge}`}
                 >
-                  {value} Impact
+                  {value}
                 </Badge>
               </div>
             );
