@@ -26,7 +26,7 @@ export interface ValueTypeConfig {
 export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
   {
     id: 'urgency',
-    label: 'Urgency',
+    label: 'Level of Urgency',
     icon: TimerIcon,
     levels: {
       high: {
@@ -88,7 +88,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
   },
   {
     id: 'strategic',
-    label: 'Strategic Alignment',
+    label: 'Strategic',
     icon: TargetIcon,
     levels: {
       high: {
@@ -119,7 +119,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
   },
   {
     id: 'revenue',
-    label: 'Maximize Revenue',
+    label: 'Maximise Revenue',
     icon: CircleDollarSignIcon,
     levels: {
       high: {
@@ -180,3 +180,4 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     },
   },
 ];
+
