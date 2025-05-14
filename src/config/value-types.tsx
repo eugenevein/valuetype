@@ -88,9 +88,27 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
   },
   {
     id: 'cost',
-    label: 'Minimize Cost',
+    label: 'Minimise Cost',
     icon: BanknoteIcon,
-    categoryDescription: '',
+    categoryDescription: (
+      <>
+        <div className="mt-2 text-xs space-y-1">
+          <p className="font-medium">Cost Savings - Lower cost compared to status quo (e.g.)</p>
+          <ul className="list-disc list-outside pl-6 space-y-0.5">
+            <li>Savings due to automated processes with e.g. less FTEs</li>
+            <li>Reduced tool/data costs, lower penalties etc</li>
+          </ul>
+          <p className="font-medium pt-1">Cost prevention - Prevention of additional future costs (e.g.)</p>
+          <ul className="list-disc list-outside pl-6 space-y-0.5">
+            <li>Critical debt affecting functionalities (E.g. Technical debt)</li>
+            <li>Penalties, Additional Hires (e.g. for new markets)</li>
+            <li>no additional external tools/process which are legally required</li>
+            <li>Failure of an existing service due to e.g. decoupling → costs if process has to run e.g. manually</li>
+            <li>Deprecation of existing service e.g. back deprecation</li>
+          </ul>
+        </div>
+      </>
+    ),
     levelOptions: [
       { value: 'high', label: 'High', description: 'Drastically reduces OpEx, avoids substantial CapEx, greatly improves resource efficiency.' },
       { value: 'mid', label: 'Mid', description: 'Reduces some operational costs, optimizes processes for cost-effectiveness, avoids minor future costs.' },
