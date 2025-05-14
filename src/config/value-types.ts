@@ -53,7 +53,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     icon: TargetIcon,
     categoryDescription: 'Strategic topics which cannot only be allocated to a EUR impact (e.g. because of Governance, Basis for future business cases, etc.) → this should only be used for exceptions',
     levelOptions: [
-      { value: 'high', label: 'High', description: 'Strategic decision (C-level request). Also includes improving scalability (e.g., new markets, more KM expansion).' },
+      { value: 'high', label: 'High', description: 'Strategic decision (C-level request). For example, this could involve improving scalability (e.g., new markets, more KM expansion).' },
       { value: 'mid', label: 'Mid', description: 'External dependencies (Cross-Domain level)' },
       { value: 'low', label: 'Low', description: 'Internal dependencies (Domain level)' },
     ],
@@ -81,3 +81,4 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
     ],
   },
 ];
+
