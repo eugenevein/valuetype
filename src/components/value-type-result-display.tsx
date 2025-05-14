@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator';
 
 interface ValueTypeResultDisplayProps {
   results: DetermineValueTypeOutput | null;
-  inputData: DetermineValueTypeInput | null; // Added to receive original form input
+  inputData: DetermineValueTypeInput | null;
   isLoading: boolean;
   error?: string | null;
 }
@@ -83,7 +83,7 @@ export function ValueTypeResultDisplay({ results, inputData, isLoading, error }:
               <div key={key} className="py-1.5 border-b last:border-b-0">
                 <div className="flex items-center">
                   <Icon className="mr-1.5 h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                  <span className="text-xs font-medium text-card-foreground mr-1 whitespace-nowrap">{categoryConfig.label}</span>
+                  <span className="text-xs font-semibold text-card-foreground mr-1 whitespace-nowrap">{categoryConfig.label}</span>
                   <Badge
                     variant="default"
                     className={`capitalize text-xs font-semibold px-1.5 py-0.5 border ml-auto ${badgeStyle}`}
@@ -104,7 +104,7 @@ export function ValueTypeResultDisplay({ results, inputData, isLoading, error }:
           <>
             <Separator className="my-1.5" />
             <div className="px-1 py-1">
-              <p className="text-xs font-semibold text-card-foreground mb-0.5">Overall Considerations:</p>
+              <p className="text-xs font-semibold text-card-foreground mb-0.5">Impact of Inaction:</p>
               <p className="text-xs text-muted-foreground italic break-words">
                 {inputData.overallConsiderations}
               </p>
