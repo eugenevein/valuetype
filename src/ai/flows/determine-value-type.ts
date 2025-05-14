@@ -70,9 +70,9 @@ User's Initial Assessment:
 
 Overall Considerations (what would happen if we don’t work on the epic right now?): "{{{overallConsiderations}}}"
 
-Based on all this information, output your final determination for each category as 'high', 'mid', or 'low'.
-Explain your reasoning if your determination differs from the user's initial assessment or if the notes significantly influence your decision.
-Output the value types in JSON format.
+Based on all this information, your task is to determine the most appropriate final value type (high, mid, or low) for each of the five categories.
+Your response MUST be a JSON object strictly conforming to the provided output schema. The JSON object should contain fields for "urgency", "marketImpact", "strategic", "revenue", and "cost", each with a value of "high", "mid", or "low".
+Do not include any other text, explanations, or conversational preamble/postamble in your JSON response.
   `,
 });
 
