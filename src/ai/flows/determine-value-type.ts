@@ -74,6 +74,14 @@ Based on all this information, your task is to determine the most appropriate fi
 Your response MUST be a JSON object strictly conforming to the provided output schema. The JSON object should contain fields for "urgency", "marketImpact", "strategic", "revenue", and "cost", each with a value of "high", "mid", or "low".
 Do not include any other text, explanations, or conversational preamble/postamble in your JSON response.
   `,
+  config: {
+    safetySettings: [
+      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+    ],
+  },
 });
 
 const determineValueTypeFlow = ai.defineFlow(
