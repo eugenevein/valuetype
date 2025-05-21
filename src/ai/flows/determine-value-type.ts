@@ -15,8 +15,10 @@ import {z} from 'genkit';
 
 // Input schema for a single value type category provided by the user
 const UserValueAssessmentSchema = z.object({
-  level: z.enum(['high', 'mid', 'low']).describe("User's selected preliminary level for this category."),
-  notes: z.string().describe("User's additional notes for this category. This field is mandatory."),
+  level: z.enum(['high', 'mid', 'low'], {
+    required_error: "Please select a level (High, Mid, or Low).",
+  }),
+  notes: z.string().min(1, "This field is required.").max(500, "Notes must be 500 characters or less."),
 });
 
 // Input schema for the AI flow
@@ -25,9 +27,11 @@ const DetermineValueTypeInputSchema = z.object({
   marketImpact: UserValueAssessmentSchema.describe('User assessment for Market Impact.'),
   strategic: UserValueAssessmentSchema.describe('User assessment for Strategic value.'),
   revenue: UserValueAssessmentSchema.describe('User assessment for Maximise Revenue.'),
-  cost: UserValueAssessmentSchema.describe('User assessment for Minimize Cost.'),
+  cost: UserValueAssessmentSchema.describe('User assessment for Minimise Cost.'),
   overallConsiderations: z
     .string()
+    .min(1, "This field is required.")
+    .max(1000, "Overall considerations must be 1000 characters or less.")
     .describe('Overall considerations or consequences if the epic is not worked on. This field is mandatory.'),
 });
 
@@ -70,6 +74,9 @@ User's Initial Assessment:
 Overall Considerations (what would happen if we don’t work on the epic right now?): "{{{overallConsiderations}}}"
 
 Based on all this information, your task is to determine the most appropriate final value type (high, mid, or low) for each of the five categories.
+Your primary goal is to confirm the user's assessment. However, if the user's notes for a specific category or the 'Overall Considerations' provide very strong evidence that contradicts the user's chosen level, you may adjust it.
+When the user selects 'low' for a category, be particularly cautious about elevating it to 'mid' or 'high'. Only do so if the user's notes for that category or the 'Overall Considerations' provide clear, explicit, and overwhelming textual evidence supporting such an upgrade. In the absence of such strong evidence, you should default to the user's 'low' assessment.
+
 Your response MUST be a JSON object strictly conforming to the provided output schema. The JSON object should contain fields for "urgency", "marketImpact", "strategic", "revenue", and "cost", each with a value of "high", "mid", or "low".
 Do not include any other text, explanations, or conversational preamble/postamble in your JSON response.
   `,
