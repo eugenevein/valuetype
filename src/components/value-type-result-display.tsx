@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { Assessment } from '@/app/page';
+import type { Assessment } from '@/services/assessment-service';
 import { VALUE_TYPES_CONFIG, type ValueCategoryKey } from '@/config/value-types.tsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

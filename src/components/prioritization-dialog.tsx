@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { ChevronsUpDown, ChevronUp, ChevronDown, Repeat } from 'lucide-react';
-import type { Assessment } from '@/app/page';
+import type { Assessment } from '@/services/assessment-service';
 import { VALUE_TYPES_CONFIG, type ValueCategoryKey } from '@/config/value-types.tsx';
 import { cn } from '@/lib/utils';
 
@@ -140,7 +140,7 @@ export function PrioritizationDialog({ isOpen, onClose, assessments }: Prioritiz
                         <TableRow key={item.id}>
                             <TableCell className="font-medium">#{index + 1}</TableCell>
                             <TableCell>{item.epicName}</TableCell>
-                            <TableCell className="text-right">{item.score}</TableCell>
+                            <TableCell className="text-right">{item.score.toFixed(2)}</TableCell>
                         </TableRow>
                         ))}
                     </TableBody>

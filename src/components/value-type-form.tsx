@@ -6,7 +6,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { valueTypeFormSchema, type ValueTypeFormData } from './value-type-form-schema';
 import { VALUE_TYPES_CONFIG, type ValueCategoryKey, type LevelOption } from '@/config/value-types.tsx';
-import type { Assessment } from '@/app/page';
+import type { Assessment } from '@/services/assessment-service';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -104,7 +104,7 @@ export function ValueTypeForm({ onSubmit, isLoading, initialData, onCancelEdit }
                       <FormLabel className="text-base font-semibold flex items-center">
                         <Shirt className="mr-2 h-5 w-5" /> T-Shirt Size (Effort)
                       </FormLabel>
-                       <Select onValueChange={field.onChange} defaultValue={field.value}>
+                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a T-shirt size..." />
@@ -234,7 +234,7 @@ export function ValueTypeForm({ onSubmit, isLoading, initialData, onCancelEdit }
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  {isEditing ? 'Updating...' : 'Generating...'}
+                  {isEditing ? 'Updating...' : 'Capturing...'}
                 </>
               ) : (
                 isEditing ? 'Update Assessment' : 'Capture Assessment'
