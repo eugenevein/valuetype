@@ -3,12 +3,13 @@
 
 import * as React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { ChevronsUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import type { Assessment } from '@/app/page';
 import { VALUE_TYPES_CONFIG, type ValueCategoryKey } from '@/config/value-types.tsx';
+import { cn } from '@/lib/utils';
 
 interface PrioritizationDialogProps {
   isOpen: boolean;
@@ -33,38 +34,45 @@ const directPrioritization = (assessments: Assessment[]) => {
     .sort((a, b) => b.score - a.score);
 };
 
-const weightedPrioritization = (assessments: Assessment[], primaryCategory: ValueCategoryKey) => {
-  const otherCategories = VALUE_TYPES_CONFIG.map(c => c.id).filter(id => id !== primaryCategory);
-
+const rankedPrioritization = (assessments: Assessment[], rankedCategories: ValueCategoryKey[]) => {
   return [...assessments].sort((a, b) => {
-    // 1. Compare by primary category
-    const aPrimaryScore = levelPoints[a[primaryCategory].level];
-    const bPrimaryScore = levelPoints[b[primaryCategory].level];
-    if (aPrimaryScore !== bPrimaryScore) {
-      return bPrimaryScore - aPrimaryScore;
-    }
-
-    // 2. Tie-breaker: Compare by other categories in their default order
-    for (const categoryId of otherCategories) {
+    // Iterate through the user-defined ranking of categories
+    for (const categoryId of rankedCategories) {
       const aScore = levelPoints[a[categoryId].level];
       const bScore = levelPoints[b[categoryId].level];
       if (aScore !== bScore) {
-        return bScore - aScore;
+        return bScore - aScore; // Higher score comes first
       }
     }
-
-    // 3. If still a tie, maintain original relative order (or by name)
+    // If all value types are identical, maintain original relative order (or sort by name)
     return a.epicName.localeCompare(b.epicName);
   });
 };
 
+
 // --- Component ---
 
 export function PrioritizationDialog({ isOpen, onClose, assessments }: PrioritizationDialogProps) {
-  const [primaryCategory, setPrimaryCategory] = React.useState<ValueCategoryKey>('urgency');
+  const [rankedCategories, setRankedCategories] = React.useState<ValueCategoryKey[]>(
+    VALUE_TYPES_CONFIG.map(c => c.id)
+  );
 
   const directResults = React.useMemo(() => directPrioritization(assessments), [assessments]);
-  const weightedResults = React.useMemo(() => weightedPrioritization(assessments, primaryCategory), [assessments, primaryCategory]);
+  const weightedResults = React.useMemo(() => rankedPrioritization(assessments, rankedCategories), [assessments, rankedCategories]);
+
+  const handleMove = (index: number, direction: 'up' | 'down') => {
+    const newRankedCategories = [...rankedCategories];
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    if (newIndex < 0 || newIndex >= newRankedCategories.length) {
+      return;
+    }
+
+    // Swap elements
+    [newRankedCategories[index], newRankedCategories[newIndex]] = [newRankedCategories[newIndex], newRankedCategories[index]];
+    
+    setRankedCategories(newRankedCategories);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -103,23 +111,37 @@ export function PrioritizationDialog({ isOpen, onClose, assessments }: Prioritiz
             </div>
           </div>
 
-          {/* Weighted Prioritization */}
+          {/* Ranked Prioritization */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg text-card-foreground">Weighted Prioritization</h3>
-            <p className="text-sm text-muted-foreground">Sort epics with one value type as the primary tie-breaker.</p>
+            <h3 className="font-semibold text-lg text-card-foreground">Ranked Prioritization</h3>
+            <p className="text-sm text-muted-foreground">Define the priority order of value types. Drag-and-drop or use buttons to reorder.</p>
             
             <div className="space-y-2">
                 <Label htmlFor="primary-category-select">Prioritize by:</Label>
-                <Select value={primaryCategory} onValueChange={(value) => setPrimaryCategory(value as ValueCategoryKey)}>
-                    <SelectTrigger id="primary-category-select">
-                        <SelectValue placeholder="Select a value type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {VALUE_TYPES_CONFIG.map(cat => (
-                           <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                <div className="border rounded-lg p-2 space-y-1 bg-background">
+                  {rankedCategories.map((categoryId, index) => {
+                    const categoryConfig = VALUE_TYPES_CONFIG.find(c => c.id === categoryId);
+                    if (!categoryConfig) return null;
+                    
+                    return (
+                       <div key={categoryId} className="flex items-center justify-between p-2 rounded-md bg-card hover:bg-secondary/50">
+                         <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs text-muted-foreground">#{index + 1}</span>
+                            <categoryConfig.icon className="h-4 w-4 text-primary" />
+                            <span className="font-medium text-sm">{categoryConfig.label}</span>
+                         </div>
+                         <div className="flex items-center">
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleMove(index, 'up')} disabled={index === 0}>
+                                <ChevronUp className="h-4 w-4" />
+                            </Button>
+                             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleMove(index, 'down')} disabled={index === rankedCategories.length - 1}>
+                                <ChevronDown className="h-4 w-4" />
+                            </Button>
+                         </div>
+                       </div>
+                    );
+                  })}
+                </div>
             </div>
             
             <div className="border rounded-lg">
