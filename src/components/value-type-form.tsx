@@ -2,11 +2,9 @@
 "use client";
 
 import * as React from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { valueTypeFormSchema, type ValueTypeFormData } from './value-type-form-schema';
-import { VALUE_TYPES_CONFIG, type ValueCategoryKey, type LevelOption } from '@/config/value-types.tsx';
-import type { Assessment } from '@/services/assessment-service';
+import { FormProvider, type UseFormReturn } from 'react-hook-form';
+import { type ValueTypeFormData } from './value-type-form-schema';
+import { VALUE_TYPES_CONFIG, type LevelOption } from '@/config/value-types.tsx';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -23,60 +21,32 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertCircle, Loader2, Shirt } from 'lucide-react';
-import { useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ValueTypeFormProps {
-  onSubmit: (data: ValueTypeFormData) => Promise<void>; // Changed to return a promise
+  form: UseFormReturn<ValueTypeFormData>;
+  onSubmit: (data: ValueTypeFormData) => Promise<void>;
   isLoading: boolean;
-  initialData?: Assessment | null;
+  isEditing: boolean;
   onCancelEdit?: () => void;
 }
 
-const getDefaultValues = (): ValueTypeFormData => {
-  const defaults: Partial<ValueTypeFormData> = {
-      epicName: '',
-      tShirtSize: 'm',
-  };
-  VALUE_TYPES_CONFIG.forEach(category => {
-    const categoryKey = category.id as ValueCategoryKey;
-    defaults[categoryKey] = {
-      level: 'mid', 
-      notes: '',
-    };
-  });
-  defaults.overallConsiderations = '';
-  return defaults as ValueTypeFormData;
-};
+export const getDefaultValues = (): ValueTypeFormData => ({
+  epicName: '',
+  tShirtSize: 'm',
+  urgency: { level: 'mid', notes: '' },
+  marketImpact: { level: 'mid', notes: '' },
+  strategic: { level: 'mid', notes: '' },
+  revenue: { level: 'mid', notes: '' },
+  cost: { level: 'mid', notes: '' },
+  overallConsiderations: '',
+});
 
-export function ValueTypeForm({ onSubmit, isLoading, initialData, onCancelEdit }: ValueTypeFormProps) {
-  const form = useForm<ValueTypeFormData>({
-    resolver: zodResolver(valueTypeFormSchema),
-    defaultValues: getDefaultValues(),
-    mode: "onChange",
-  });
-  
-  useEffect(() => {
-    if (initialData) {
-      form.reset(initialData);
-    } else {
-      form.reset(getDefaultValues());
-    }
-  }, [initialData, form]);
-
-
-  const handleFormSubmit = async (data: ValueTypeFormData) => {
-    await onSubmit(data); // Await the submission
-    if (!initialData) { // Only reset for new submissions, not edits
-        form.reset(getDefaultValues());
-    }
-  };
-
-  const isEditing = !!initialData;
+export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEdit }: ValueTypeFormProps) {
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
         <Card className="shadow-lg rounded-xl overflow-hidden">
             <CardHeader>

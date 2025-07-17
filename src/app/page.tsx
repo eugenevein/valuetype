@@ -2,11 +2,14 @@
 "use client";
 
 import * as React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useFirestoreQuery } from '@/hooks/use-firestore-query';
 import { ValueTypeForm } from '@/components/value-type-form';
 import { ValueTypeResultDisplay } from '@/components/value-type-result-display';
 import { AppHeader } from '@/components/app-header';
-import type { ValueTypeFormData } from '@/components/value-type-form-schema';
+import { valueTypeFormSchema, type ValueTypeFormData } from '@/components/value-type-form-schema';
+import { getDefaultValues } from '@/components/value-type-form';
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -34,6 +37,21 @@ export default function HomePage() {
 
   const { toast } = useToast();
 
+  const form = useForm<ValueTypeFormData>({
+    resolver: zodResolver(valueTypeFormSchema),
+    defaultValues: getDefaultValues(),
+    mode: "onChange",
+  });
+  
+  React.useEffect(() => {
+    if (editingAssessment) {
+      form.reset(editingAssessment);
+    } else {
+      form.reset(getDefaultValues());
+    }
+  }, [editingAssessment, form]);
+
+
   const handleSubmit = async (data: ValueTypeFormData) => {
     setIsMutating(true);
     try {
@@ -44,7 +62,7 @@ export default function HomePage() {
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been updated.`,
         });
-        setEditingAssessment(null);
+        setEditingAssessment(null); // This will trigger the useEffect to reset the form
       } else {
         // Add new assessment
         await assessmentService.create(data);
@@ -52,6 +70,7 @@ export default function HomePage() {
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been captured.`,
         });
+        form.reset(getDefaultValues()); // Reset form for new entry
       }
     } catch (e) {
         toast({
@@ -120,9 +139,10 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div>
               <ValueTypeForm 
+                form={form}
                 onSubmit={handleSubmit} 
                 isLoading={isMutating} 
-                initialData={editingAssessment}
+                isEditing={!!editingAssessment}
                 onCancelEdit={handleCancelEdit}
               />
             </div>
@@ -163,7 +183,7 @@ export default function HomePage() {
                 !isLoading && !error && (
                   <div className="text-center text-muted-foreground mt-12 border-2 border-dashed border-border rounded-xl p-12">
                     <p className="text-lg">Your captured assessments will appear here.</p>
-                    <p className="text-sm mt-2">Fill out the form on the left to get started.</p>
+                    <p className="text-sm mt-2">Fill out the left to get started.</p>
                   </div>
                 )
               )}
