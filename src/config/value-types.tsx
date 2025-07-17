@@ -6,7 +6,7 @@ import { TimerIcon, TrendingUpIcon, TargetIcon, CircleDollarSignIcon, BanknoteIc
 import type { ValueTypeFormData } from '@/components/value-type-form-schema';
 
 export type ValueLevel = 'high' | 'mid' | 'low';
-export type ValueCategoryKey = Exclude<keyof ValueTypeFormData, 'overallConsiderations' | 'epicName'>;
+export type ValueCategoryKey = Exclude<keyof ValueTypeFormData, 'overallConsiderations' | 'epicName' | 'tShirtSize'>;
 
 export interface LevelOption {
   value: ValueLevel;

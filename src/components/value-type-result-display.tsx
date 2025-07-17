@@ -6,8 +6,8 @@ import { VALUE_TYPES_CONFIG, type ValueCategoryKey } from '@/config/value-types.
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Pencil, Trash2, Shirt } from 'lucide-react';
 
 interface ValueTypeResultDisplayProps {
   data: Assessment;
@@ -37,9 +37,17 @@ export function ValueTypeResultDisplay({ data, onEdit, onDelete }: ValueTypeResu
     <Card className="shadow-lg border-primary/10 relative">
        <CardHeader className="pb-2 pt-4 px-4">
          <div className="flex justify-between items-start">
-            <CardTitle className="text-lg font-bold text-primary pr-20 break-words">
-                {data.epicName}
-            </CardTitle>
+            <div className="flex-1 pr-20">
+                <CardTitle className="text-lg font-bold text-primary break-words">
+                    {data.epicName}
+                </CardTitle>
+                <div className="flex items-center mt-1 text-sm text-muted-foreground">
+                    <Shirt className="mr-1.5 h-4 w-4"/>
+                    <span>T-Shirt Size:</span>
+                    <Badge variant="secondary" className="ml-2 uppercase">{data.tShirtSize}</Badge>
+                </div>
+            </div>
+
             <div className="absolute top-4 right-4 flex items-center space-x-2">
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEdit}>
                     <Pencil className="h-4 w-4" />
@@ -52,7 +60,7 @@ export function ValueTypeResultDisplay({ data, onEdit, onDelete }: ValueTypeResu
             </div>
          </div>
       </CardHeader>
-      <CardContent className="p-4 pt-0">
+      <CardContent className="p-4 pt-2">
         <div className="space-y-2">
           {VALUE_TYPES_CONFIG.map(categoryConfig => {
             const key = categoryConfig.id as ValueCategoryKey;

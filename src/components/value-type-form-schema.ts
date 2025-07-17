@@ -11,6 +11,9 @@ const ValueTypeInputSchema = z.object({
 
 export const valueTypeFormSchema = z.object({
   epicName: z.string().min(1, "Epic name is required.").max(100, "Epic name must be 100 characters or less."),
+  tShirtSize: z.enum(['xs', 's', 'm', 'l', 'xl'], {
+    required_error: "Please select a T-shirt size.",
+  }),
   urgency: ValueTypeInputSchema,
   marketImpact: ValueTypeInputSchema,
   strategic: ValueTypeInputSchema,

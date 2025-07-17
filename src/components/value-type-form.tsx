@@ -22,8 +22,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, Shirt } from 'lucide-react';
 import { useEffect } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ValueTypeFormProps {
   onSubmit: (data: ValueTypeFormData) => void;
@@ -35,6 +36,7 @@ interface ValueTypeFormProps {
 const getDefaultValues = (): ValueTypeFormData => {
   const defaults: Partial<ValueTypeFormData> = {
       epicName: '',
+      tShirtSize: 'm',
   };
   VALUE_TYPES_CONFIG.forEach(category => {
     const categoryKey = category.id as ValueCategoryKey;
@@ -80,7 +82,7 @@ export function ValueTypeForm({ onSubmit, isLoading, initialData, onCancelEdit }
             <CardHeader>
                 <CardTitle className="text-2xl font-semibold text-primary">Epic Details</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
                 <FormField
                   control={form.control}
                   name="epicName"
@@ -90,6 +92,32 @@ export function ValueTypeForm({ onSubmit, isLoading, initialData, onCancelEdit }
                       <FormControl>
                         <Input placeholder="e.g., Implement New User Dashboard" {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="tShirtSize"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base font-semibold flex items-center">
+                        <Shirt className="mr-2 h-5 w-5" /> T-Shirt Size (Effort)
+                      </FormLabel>
+                       <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a T-shirt size..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="xs">XS (Minimal Effort)</SelectItem>
+                          <SelectItem value="s">S (Small Effort)</SelectItem>
+                          <SelectItem value="m">M (Medium Effort)</SelectItem>
+                          <SelectItem value="l">L (Large Effort)</SelectItem>
+                          <SelectItem value="xl">XL (Extra Large Effort)</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
