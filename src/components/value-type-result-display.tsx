@@ -1,14 +1,18 @@
 
 "use client";
 
-import type { ValueTypeFormData } from '@/components/value-type-form-schema';
-import { VALUE_TYPES_CONFIG, type ValueCategoryKey } from '@/config/value-types';
-import { Card, CardContent } from '@/components/ui/card';
+import type { Assessment } from '@/app/page';
+import { VALUE_TYPES_CONFIG, type ValueCategoryKey } from '@/config/value-types.tsx';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { Pencil, Trash2 } from 'lucide-react';
 
 interface ValueTypeResultDisplayProps {
-  data: ValueTypeFormData | null;
+  data: Assessment;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
 const getValueStyles = (value: 'high' | 'mid' | 'low') => {
@@ -24,14 +28,31 @@ const getValueStyles = (value: 'high' | 'mid' | 'low') => {
   }
 };
 
-export function ValueTypeResultDisplay({ data }: ValueTypeResultDisplayProps) {
+export function ValueTypeResultDisplay({ data, onEdit, onDelete }: ValueTypeResultDisplayProps) {
   if (!data) {
     return null;
   }
 
   return (
-    <Card className="shadow-lg border-primary/10">
-      <CardContent className="p-4">
+    <Card className="shadow-lg border-primary/10 relative">
+       <CardHeader className="pb-2 pt-4 px-4">
+         <div className="flex justify-between items-start">
+            <CardTitle className="text-lg font-bold text-primary pr-20 break-words">
+                {data.epicName}
+            </CardTitle>
+            <div className="absolute top-4 right-4 flex items-center space-x-2">
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEdit}>
+                    <Pencil className="h-4 w-4" />
+                    <span className="sr-only">Edit</span>
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={onDelete}>
+                    <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Delete</span>
+                </Button>
+            </div>
+         </div>
+      </CardHeader>
+      <CardContent className="p-4 pt-0">
         <div className="space-y-2">
           {VALUE_TYPES_CONFIG.map(categoryConfig => {
             const key = categoryConfig.id as ValueCategoryKey;

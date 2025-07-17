@@ -3,10 +3,10 @@ import React from 'react';
 import type { ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { TimerIcon, TrendingUpIcon, TargetIcon, CircleDollarSignIcon, BanknoteIcon } from 'lucide-react';
-import type { DetermineValueTypeInput } from '@/ai/flows/determine-value-type';
+import type { ValueTypeFormData } from '@/components/value-type-form-schema';
 
 export type ValueLevel = 'high' | 'mid' | 'low';
-export type ValueCategoryKey = Exclude<keyof DetermineValueTypeInput, 'overallConsiderations'>;
+export type ValueCategoryKey = Exclude<keyof ValueTypeFormData, 'overallConsiderations' | 'epicName'>;
 
 export interface LevelOption {
   value: ValueLevel;

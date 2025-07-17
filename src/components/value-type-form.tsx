@@ -5,7 +5,8 @@ import type * as React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { valueTypeFormSchema, type ValueTypeFormData } from './value-type-form-schema';
-import { VALUE_TYPES_CONFIG, type ValueCategoryKey, type LevelOption } from '@/config/value-types';
+import { VALUE_TYPES_CONFIG, type ValueCategoryKey, type LevelOption } from '@/config/value-types.tsx';
+import type { Assessment } from '@/app/page';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -24,13 +26,16 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 
 interface ValueTypeFormProps {
-  onSubmit: (data: ValueTypeFormData) => Promise<void>;
+  onSubmit: (data: ValueTypeFormData) => void;
   isLoading: boolean;
-  formRef?: React.RefObject<{ reset: () => void }>;
+  initialData?: Assessment | null;
+  onCancelEdit?: () => void;
 }
 
 const getDefaultValues = (): ValueTypeFormData => {
-  const defaults: Partial<ValueTypeFormData> = {};
+  const defaults: Partial<ValueTypeFormData> = {
+      epicName: '',
+  };
   VALUE_TYPES_CONFIG.forEach(category => {
     const categoryKey = category.id as ValueCategoryKey;
     defaults[categoryKey] = {
@@ -42,7 +47,7 @@ const getDefaultValues = (): ValueTypeFormData => {
   return defaults as ValueTypeFormData;
 };
 
-export function ValueTypeForm({ onSubmit, isLoading, formRef }: ValueTypeFormProps) {
+export function ValueTypeForm({ onSubmit, isLoading, initialData, onCancelEdit }: ValueTypeFormProps) {
   const form = useForm<ValueTypeFormData>({
     resolver: zodResolver(valueTypeFormSchema),
     defaultValues: getDefaultValues(),
@@ -50,19 +55,48 @@ export function ValueTypeForm({ onSubmit, isLoading, formRef }: ValueTypeFormPro
   });
   
   useEffect(() => {
-    if (formRef && formRef.current) {
-      formRef.current.reset = () => form.reset(getDefaultValues());
+    if (initialData) {
+      form.reset(initialData);
+    } else {
+      form.reset(getDefaultValues());
     }
-  }, [form, formRef]);
+  }, [initialData, form]);
 
 
   const handleFormSubmit = (data: ValueTypeFormData) => {
     onSubmit(data);
+    if (!initialData) { // Only reset for new submissions, not edits
+        form.reset(getDefaultValues());
+    }
   };
+
+  const isEditing = !!initialData;
 
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+
+        <Card className="shadow-lg rounded-xl overflow-hidden">
+            <CardHeader>
+                <CardTitle className="text-2xl font-semibold text-primary">Epic Details</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <FormField
+                  control={form.control}
+                  name="epicName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base font-semibold">Epic Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Implement New User Dashboard" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+            </CardContent>
+        </Card>
+
         {VALUE_TYPES_CONFIG.map((category) => (
           <Card key={category.id} className="shadow-lg rounded-xl overflow-hidden">
             <CardHeader className="bg-card">
@@ -86,26 +120,25 @@ export function ValueTypeForm({ onSubmit, isLoading, formRef }: ValueTypeFormPro
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                         className="flex flex-col space-y-2"
                       >
                         {category.levelOptions.map((option: LevelOption) => (
                           <FormItem 
                             key={option.value} 
                             className="flex items-center space-x-3 space-y-0 p-4 border rounded-lg shadow-sm hover:bg-secondary/50 transition-colors cursor-pointer data-[state=checked]:bg-primary/10 data-[state=checked]:border-primary"
-                            onClick={() => field.onChange(option.value)}
                           >
                             <FormControl>
-                              <RadioGroupItem value={option.value} />
+                               <RadioGroupItem value={option.value} id={`${category.id}-${option.value}`} />
                             </FormControl>
-                            <div className="flex-1">
-                              <FormLabel className="font-medium text-foreground capitalize cursor-pointer">
-                                {option.label}
-                              </FormLabel>
-                              <FormDescription className="text-sm text-muted-foreground">
-                                {option.description}
-                              </FormDescription>
-                            </div>
+                            <FormLabel htmlFor={`${category.id}-${option.value}`} className="flex-1 cursor-pointer">
+                                <div className="font-medium text-foreground capitalize">
+                                    {option.label}
+                                </div>
+                                <FormDescription className="text-sm text-muted-foreground">
+                                    {option.description}
+                                </FormDescription>
+                            </FormLabel>
                           </FormItem>
                         ))}
                       </RadioGroup>
@@ -162,17 +195,25 @@ export function ValueTypeForm({ onSubmit, isLoading, formRef }: ValueTypeFormPro
             />
           </CardContent>
         </Card>
+        
+        <div className="flex flex-col sm:flex-row gap-4">
+            {isEditing && (
+              <Button type="button" variant="outline" onClick={onCancelEdit} className="w-full text-lg py-6 rounded-lg shadow-md">
+                Cancel Edit
+              </Button>
+            )}
+            <Button type="submit" className="w-full text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg shadow-md focus:ring-2 focus:ring-accent focus:ring-offset-2" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  {isEditing ? 'Updating...' : 'Generating...'}
+                </>
+              ) : (
+                isEditing ? 'Update Assessment' : 'Capture Assessment'
+              )}
+            </Button>
+        </div>
 
-        <Button type="submit" className="w-full text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg shadow-md focus:ring-2 focus:ring-accent focus:ring-offset-2" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Generating Value Types...
-            </>
-          ) : (
-            'Generate Value Types'
-          )}
-        </Button>
       </form>
     </FormProvider>
   );

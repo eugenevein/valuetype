@@ -10,6 +10,7 @@ const ValueTypeInputSchema = z.object({
 });
 
 export const valueTypeFormSchema = z.object({
+  epicName: z.string().min(1, "Epic name is required.").max(100, "Epic name must be 100 characters or less."),
   urgency: ValueTypeInputSchema,
   marketImpact: ValueTypeInputSchema,
   strategic: ValueTypeInputSchema,
