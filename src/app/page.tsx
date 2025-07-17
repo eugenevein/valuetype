@@ -17,6 +17,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { PrioritizationDialog } from '@/components/prioritization-dialog';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { ListChecks } from 'lucide-react';
 
 
 export interface Assessment extends ValueTypeFormData {
@@ -27,6 +30,7 @@ export default function HomePage() {
   const [assessments, setAssessments] = React.useState<Assessment[]>([]);
   const [editingAssessment, setEditingAssessment] = React.useState<Assessment | null>(null);
   const [assessmentToDelete, setAssessmentToDelete] = React.useState<Assessment | null>(null);
+  const [isPrioritizationOpen, setIsPrioritizationOpen] = React.useState(false);
 
   const { toast } = useToast();
 
@@ -54,6 +58,7 @@ export default function HomePage() {
     const assessment = assessments.find(a => a.id === id);
     if (assessment) {
       setEditingAssessment(assessment);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
   
@@ -95,7 +100,14 @@ export default function HomePage() {
               />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-center mb-6 text-primary">Captured Assessments</h2>
+              <div className="flex justify-between items-center mb-6">
+                 <h2 className="text-2xl font-bold text-primary">Captured Assessments</h2>
+                 <Button onClick={() => setIsPrioritizationOpen(true)} disabled={assessments.length < 2}>
+                    <ListChecks className="mr-2 h-4 w-4" />
+                    Prioritize Epics
+                 </Button>
+              </div>
+
               {assessments.length > 0 ? (
                 <div className="space-y-4">
                   {assessments.map((data) => (
@@ -121,6 +133,7 @@ export default function HomePage() {
         </footer>
       </div>
 
+      {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!assessmentToDelete} onOpenChange={(open) => !open && setAssessmentToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -131,10 +144,17 @@ export default function HomePage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setAssessmentToDelete(null)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+            <AlertDialogAction onClick={confirmDelete} className={buttonVariants({ variant: "destructive" })}>Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Prioritization Dialog */}
+      <PrioritizationDialog 
+        isOpen={isPrioritizationOpen}
+        onClose={() => setIsPrioritizationOpen(false)}
+        assessments={assessments}
+      />
     </>
   );
 }

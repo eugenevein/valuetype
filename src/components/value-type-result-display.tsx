@@ -6,7 +6,7 @@ import { VALUE_TYPES_CONFIG, type ValueCategoryKey } from '@/config/value-types.
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Pencil, Trash2 } from 'lucide-react';
 
 interface ValueTypeResultDisplayProps {

@@ -1,7 +1,7 @@
 
 "use client";
 
-import type * as React from 'react';
+import * as React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { valueTypeFormSchema, type ValueTypeFormData } from './value-type-form-schema';
