@@ -27,7 +27,7 @@ import { useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ValueTypeFormProps {
-  onSubmit: (data: ValueTypeFormData) => void;
+  onSubmit: (data: ValueTypeFormData) => Promise<void>; // Changed to return a promise
   isLoading: boolean;
   initialData?: Assessment | null;
   onCancelEdit?: () => void;
@@ -65,8 +65,8 @@ export function ValueTypeForm({ onSubmit, isLoading, initialData, onCancelEdit }
   }, [initialData, form]);
 
 
-  const handleFormSubmit = (data: ValueTypeFormData) => {
-    onSubmit(data);
+  const handleFormSubmit = async (data: ValueTypeFormData) => {
+    await onSubmit(data); // Await the submission
     if (!initialData) { // Only reset for new submissions, not edits
         form.reset(getDefaultValues());
     }
