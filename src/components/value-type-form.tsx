@@ -6,7 +6,6 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { valueTypeFormSchema, type ValueTypeFormData } from './value-type-form-schema';
 import { VALUE_TYPES_CONFIG, type ValueCategoryKey, type LevelOption } from '@/config/value-types';
-import type { DetermineValueTypeInput } from '@/ai/flows/determine-value-type';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -20,12 +19,14 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'; // Added CardDescription
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface ValueTypeFormProps {
-  onSubmit: (data: DetermineValueTypeInput) => Promise<void>;
+  onSubmit: (data: ValueTypeFormData) => Promise<void>;
   isLoading: boolean;
+  formRef?: React.RefObject<{ reset: () => void }>;
 }
 
 const getDefaultValues = (): ValueTypeFormData => {
@@ -41,15 +42,22 @@ const getDefaultValues = (): ValueTypeFormData => {
   return defaults as ValueTypeFormData;
 };
 
-export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
+export function ValueTypeForm({ onSubmit, isLoading, formRef }: ValueTypeFormProps) {
   const form = useForm<ValueTypeFormData>({
     resolver: zodResolver(valueTypeFormSchema),
     defaultValues: getDefaultValues(),
     mode: "onChange",
   });
+  
+  useEffect(() => {
+    if (formRef && formRef.current) {
+      formRef.current.reset = () => form.reset(getDefaultValues());
+    }
+  }, [form, formRef]);
+
 
   const handleFormSubmit = (data: ValueTypeFormData) => {
-    onSubmit(data as DetermineValueTypeInput);
+    onSubmit(data);
   };
 
   return (
@@ -133,7 +141,6 @@ export function ValueTypeForm({ onSubmit, isLoading }: ValueTypeFormProps) {
               <AlertCircle className="mr-3 h-7 w-7" />
               Impact of Not Doing
             </CardTitle>
-            {/* Removed the previous CardDescription here as it was causing an error and is not specifically requested now */}
           </CardHeader>
           <CardContent className="pt-2 pb-6 px-6">
             <FormField
