@@ -22,11 +22,9 @@ export const createAssessment = async (data: CreateAssessmentData) => {
     });
 };
 
-export const updateAssessment = async (assessmentId: string, data: Partial<ValueTypeFormData>) => {
+export const updateAssessment = async (assessmentId: string, data: Partial<Assessment>) => {
     const assessmentDocRef = doc(db, 'assessments', assessmentId);
-    // The userId should not be updated after creation, so we explicitly keep it.
-    // However, the rules should prevent this anyway. Let's send the full object.
-    return updateDoc(assessmentDocRef, data as any);
+    return updateDoc(assessmentDocRef, data);
 };
 
 export const deleteAssessment = async (assessmentId: string) => {
@@ -53,3 +51,5 @@ export function withTimeout<T>(promise: Promise<T>, ms = 10000): Promise<T> {
     );
   });
 }
+
+    

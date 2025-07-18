@@ -70,7 +70,6 @@ export default function HomePage() {
     setIsMutating(true);
     try {
       if (editingAssessment) {
-        // When updating, we pass the full data object which includes the userId.
         const updateData = { ...editingAssessment, ...data };
         await withTimeout(updateAssessment(editingAssessment.id, updateData));
         toast({
@@ -91,7 +90,7 @@ export default function HomePage() {
        toast({
         title: "Error Saving Assessment",
         description: error.message === 'Operation timed out' 
-          ? 'The request to the database timed out. Please check your connection and Firestore rules.'
+          ? 'The request to the database timed out. Please check your connection and security rules.'
           : 'Could not save the assessment. Please check the browser console for details.',
         variant: "destructive",
       });
@@ -135,7 +134,7 @@ export default function HomePage() {
         toast({
                title: "Error Deleting Assessment",
                description: error.message === 'Operation timed out'
-                ? 'The request to the database timed out. Please check your connection and Firestore rules.'
+                ? 'The request to the database timed out. Please check your connection and security rules.'
                 : 'Could not delete the assessment. Please check the browser console for details.',
                variant: "destructive",
         });
@@ -224,3 +223,5 @@ export default function HomePage() {
     </AuthGuard>
   );
 }
+
+    
