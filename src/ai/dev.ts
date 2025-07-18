@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
 config();
 
-// import '@/ai/flows/determine-value-type.ts'; // Removed as this flow is no longer used
-import '@/ai/flows/analyze-inaction-impact.ts';
+// All AI flows have been removed as they are no longer part of the application's functionality.
+// This file is kept for potential future use with Genkit.
