@@ -28,7 +28,6 @@ import { assessmentService, type Assessment } from '@/services/assessment-servic
 
 
 export default function HomePage() {
-  // Request sorted data directly from Firestore
   const { data: assessments, isLoading, error } = useFirestoreQuery('assessments', {
     orderBy: ['createdAt', 'desc']
   });
@@ -57,23 +56,30 @@ export default function HomePage() {
 
   const handleSubmit = async (data: ValueTypeFormData) => {
     setIsMutating(true);
+    const mutationTimeout = setTimeout(() => {
+      setIsMutating(false);
+      toast({
+        title: "Error: Operation Timed Out",
+        description: "The operation took too long. Please check your Firestore database rules and network connection.",
+        variant: "destructive",
+      });
+    }, 10000); // 10 second timeout
+
     try {
       if (editingAssessment) {
-        // Update existing assessment
         await assessmentService.update(editingAssessment.id, data);
         toast({
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been updated.`,
         });
-        setEditingAssessment(null); // This will trigger the useEffect to reset the form
+        setEditingAssessment(null);
       } else {
-        // Add new assessment
         await assessmentService.create(data);
         toast({
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been captured.`,
         });
-        form.reset(getDefaultValues()); // Reset form for new entry after submission
+        form.reset(getDefaultValues());
       }
     } catch (e) {
         toast({
@@ -82,6 +88,7 @@ export default function HomePage() {
             variant: "destructive",
         });
     } finally {
+        clearTimeout(mutationTimeout);
         setIsMutating(false);
     }
   };
@@ -108,6 +115,16 @@ export default function HomePage() {
   const confirmDelete = async () => {
     if (assessmentToDelete) {
       setIsMutating(true);
+      const mutationTimeout = setTimeout(() => {
+        setIsMutating(false);
+        setAssessmentToDelete(null);
+        toast({
+          title: "Error: Operation Timed Out",
+          description: "Could not delete the assessment. Please check your Firestore database rules and network connection.",
+          variant: "destructive",
+        });
+      }, 10000); // 10 second timeout
+
       try {
         await assessmentService.delete(assessmentToDelete.id);
         toast({
@@ -115,7 +132,6 @@ export default function HomePage() {
             description: `Assessment for "${assessmentToDelete.epicName}" has been removed.`,
             variant: "destructive",
         });
-        setAssessmentToDelete(null);
       } catch (e) {
           toast({
               title: "Error",
@@ -123,6 +139,8 @@ export default function HomePage() {
               variant: "destructive",
           });
       } finally {
+          clearTimeout(mutationTimeout);
+          setAssessmentToDelete(null);
           setIsMutating(false);
       }
     }
@@ -162,6 +180,7 @@ export default function HomePage() {
                   <div className="text-center text-red-500 mt-12 border-2 border-dashed border-red-400 rounded-xl p-12">
                       <p className="text-lg">Could not load assessments.</p>
                       <p className="text-sm mt-2">{error.message}</p>
+                      <p className="text-sm mt-4 font-semibold">Please check your Firebase configuration and Firestore database rules.</p>
                   </div>
               )}
 
@@ -180,7 +199,7 @@ export default function HomePage() {
                 !isLoading && !error && (
                   <div className="text-center text-muted-foreground mt-12 border-2 border-dashed border-border rounded-xl p-12">
                     <p className="text-lg">Your captured assessments will appear here.</p>
-                    <p className="text-sm mt-2">Fill out the left to get started.</p>
+                    <p className="text-sm mt-2">Fill out the form on the left to get started.</p>
                   </div>
                 )
               )}
