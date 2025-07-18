@@ -23,11 +23,19 @@ import {
 import { PrioritizationDialog } from '@/components/prioritization-dialog';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { ListChecks, Loader2 } from 'lucide-react';
-import type { Assessment } from '@/services/assessment-service';
 import AuthGuard from '@/components/auth-guard';
+import { useAuth } from '@/hooks/use-auth';
+import { createAssessment, deleteAssessment, updateAssessment, type Assessment } from '@/services/assessment-service';
+import { useFirestoreQuery } from '@/hooks/use-firestore-query';
 
 export default function HomePage() {
-  const [assessments, setAssessments] = React.useState<Assessment[]>([]);
+  const { user } = useAuth();
+  
+  const { data: assessments, isLoading: isLoadingAssessments } = useFirestoreQuery(
+    user ? `users/${user.uid}/assessments` : null,
+    { orderBy: ["createdAt", "desc"] }
+  );
+
   const [editingAssessment, setEditingAssessment] = React.useState<Assessment | null>(null);
   const [assessmentToDelete, setAssessmentToDelete] = React.useState<Assessment | null>(null);
   const [isPrioritizationOpen, setIsPrioritizationOpen] = React.useState(false);
@@ -51,26 +59,22 @@ export default function HomePage() {
 
 
   const handleSubmit = async (data: ValueTypeFormData) => {
+    if (!user) {
+        toast({ title: "Error", description: "You must be logged in to perform this action.", variant: "destructive" });
+        return;
+    }
+
     setIsMutating(true);
-
-    // Simulate async operation
-    await new Promise(resolve => setTimeout(resolve, 500));
-
     try {
       if (editingAssessment) {
-        setAssessments(prev => prev.map(a => a.id === editingAssessment.id ? { ...editingAssessment, ...data } : a));
+        await updateAssessment(user.uid, editingAssessment.id, data);
         toast({
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been updated.`,
         });
         setEditingAssessment(null);
       } else {
-        const newAssessment: Assessment = {
-          id: new Date().toISOString(),
-          ...data,
-          createdAt: new Date() as any, // Using Date for local state
-        };
-        setAssessments(prev => [newAssessment, ...prev]);
+        await createAssessment(user.uid, data);
         toast({
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been captured.`,
@@ -108,11 +112,10 @@ export default function HomePage() {
   };
 
   const confirmDelete = async () => {
-    if (assessmentToDelete) {
+    if (assessmentToDelete && user) {
       setIsMutating(true);
-      await new Promise(resolve => setTimeout(resolve, 500));
-       try {
-        setAssessments(prev => prev.filter(a => a.id !== assessmentToDelete.id));
+      try {
+        await deleteAssessment(user.uid, assessmentToDelete.id);
         toast({
             title: "Deleted",
             description: `Assessment for "${assessmentToDelete.epicName}" has been removed.`,
@@ -149,13 +152,17 @@ export default function HomePage() {
             <div>
               <div className="flex justify-between items-center mb-4">
                  <h2 className="text-xl font-bold">Captured Assessments</h2>
-                 <Button onClick={() => setIsPrioritizationOpen(true)} disabled={assessments.length < 2}>
+                 <Button onClick={() => setIsPrioritizationOpen(true)} disabled={!assessments || assessments.length < 2}>
                     <ListChecks className="mr-2 h-4 w-4" />
                     Prioritize
                  </Button>
               </div>
 
-              {assessments.length > 0 ? (
+              {isLoadingAssessments ? (
+                 <div className="text-center text-muted-foreground mt-12 border-2 border-dashed border-border rounded-xl p-12 flex justify-center items-center">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  </div>
+              ) : assessments && assessments.length > 0 ? (
                 <div className="space-y-4">
                   {assessments.map((data) => (
                     <ValueTypeResultDisplay 
