@@ -34,7 +34,7 @@ export function useFirestoreQuery(path: string | null, options: QueryOptions = {
 
     let q = query(collection(db, path));
     
-    if (whereField && whereOp && whereValue) {
+    if (whereField && whereOp && whereValue !== undefined) {
         q = query(q, firestoreWhere(whereField, whereOp, whereValue));
     }
     if (orderByField) {
