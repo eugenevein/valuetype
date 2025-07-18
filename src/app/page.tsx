@@ -4,7 +4,6 @@
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useFirestoreQuery } from '@/hooks/use-firestore-query';
 import { ValueTypeForm } from '@/components/value-type-form';
 import { ValueTypeResultDisplay } from '@/components/value-type-result-display';
 import { AppHeader } from '@/components/app-header';
@@ -24,14 +23,10 @@ import {
 import { PrioritizationDialog } from '@/components/prioritization-dialog';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { ListChecks, Loader2 } from 'lucide-react';
-import { assessmentService, type Assessment } from '@/services/assessment-service';
-
+import type { Assessment } from '@/services/assessment-service';
 
 export default function HomePage() {
-  const { data: assessments, isLoading, error } = useFirestoreQuery('assessments', {
-    orderBy: ['createdAt', 'desc']
-  });
-
+  const [assessments, setAssessments] = React.useState<Assessment[]>([]);
   const [editingAssessment, setEditingAssessment] = React.useState<Assessment | null>(null);
   const [assessmentToDelete, setAssessmentToDelete] = React.useState<Assessment | null>(null);
   const [isPrioritizationOpen, setIsPrioritizationOpen] = React.useState(false);
@@ -56,41 +51,32 @@ export default function HomePage() {
 
   const handleSubmit = async (data: ValueTypeFormData) => {
     setIsMutating(true);
-    const mutationTimeout = setTimeout(() => {
-      setIsMutating(false);
-      toast({
-        title: "Error: Operation Timed Out",
-        description: "The operation took too long. Please check your Firestore database rules and network connection.",
-        variant: "destructive",
-      });
-    }, 10000); // 10 second timeout
 
-    try {
-      if (editingAssessment) {
-        await assessmentService.update(editingAssessment.id, data);
-        toast({
-          title: "Success!",
-          description: `Assessment for "${data.epicName}" has been updated.`,
-        });
-        setEditingAssessment(null);
-      } else {
-        await assessmentService.create(data);
-        toast({
-          title: "Success!",
-          description: `Assessment for "${data.epicName}" has been captured.`,
-        });
-        form.reset(getDefaultValues());
-      }
-    } catch (e) {
-        toast({
-            title: "Error",
-            description: "An unexpected error occurred. Please try again.",
-            variant: "destructive",
-        });
-    } finally {
-        clearTimeout(mutationTimeout);
-        setIsMutating(false);
+    // Simulate async operation
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    if (editingAssessment) {
+      setAssessments(prev => prev.map(a => a.id === editingAssessment.id ? { ...editingAssessment, ...data } : a));
+      toast({
+        title: "Success!",
+        description: `Assessment for "${data.epicName}" has been updated.`,
+      });
+      setEditingAssessment(null);
+    } else {
+      const newAssessment: Assessment = {
+        id: new Date().toISOString(),
+        ...data,
+        createdAt: new Date() as any, // Using Date for local state
+      };
+      setAssessments(prev => [newAssessment, ...prev]);
+      toast({
+        title: "Success!",
+        description: `Assessment for "${data.epicName}" has been captured.`,
+      });
+      form.reset(getDefaultValues());
     }
+
+    setIsMutating(false);
   };
 
   const handleEdit = (id: string) => {
@@ -115,34 +101,15 @@ export default function HomePage() {
   const confirmDelete = async () => {
     if (assessmentToDelete) {
       setIsMutating(true);
-      const mutationTimeout = setTimeout(() => {
-        setIsMutating(false);
-        setAssessmentToDelete(null);
-        toast({
-          title: "Error: Operation Timed Out",
-          description: "Could not delete the assessment. Please check your Firestore database rules and network connection.",
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setAssessments(prev => prev.filter(a => a.id !== assessmentToDelete.id));
+      toast({
+          title: "Deleted",
+          description: `Assessment for "${assessmentToDelete.epicName}" has been removed.`,
           variant: "destructive",
-        });
-      }, 10000); // 10 second timeout
-
-      try {
-        await assessmentService.delete(assessmentToDelete.id);
-        toast({
-            title: "Deleted",
-            description: `Assessment for "${assessmentToDelete.epicName}" has been removed.`,
-            variant: "destructive",
-        });
-      } catch (e) {
-          toast({
-              title: "Error",
-              description: "Could not delete the assessment. Please try again.",
-              variant: "destructive",
-          });
-      } finally {
-          clearTimeout(mutationTimeout);
-          setAssessmentToDelete(null);
-          setIsMutating(false);
-      }
+      });
+      setAssessmentToDelete(null);
+      setIsMutating(false);
     }
   }
 
@@ -164,27 +131,13 @@ export default function HomePage() {
             <div>
               <div className="flex justify-between items-center mb-4">
                  <h2 className="text-xl font-bold">Captured Assessments</h2>
-                 <Button onClick={() => setIsPrioritizationOpen(true)} disabled={!assessments || assessments.length < 2}>
+                 <Button onClick={() => setIsPrioritizationOpen(true)} disabled={assessments.length < 2}>
                     <ListChecks className="mr-2 h-4 w-4" />
                     Prioritize
                  </Button>
               </div>
 
-              {isLoading && (
-                  <div className="flex justify-center items-center h-64">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  </div>
-              )}
-
-              {!isLoading && error && (
-                  <div className="text-center text-red-500 mt-12 border-2 border-dashed border-red-400 rounded-xl p-12">
-                      <p className="text-lg">Could not load assessments.</p>
-                      <p className="text-sm mt-2">{error.message}</p>
-                      <p className="text-sm mt-4 font-semibold">Please check your Firebase configuration and Firestore database rules.</p>
-                  </div>
-              )}
-
-              {!isLoading && !error && assessments && assessments.length > 0 ? (
+              {assessments.length > 0 ? (
                 <div className="space-y-4">
                   {assessments.map((data) => (
                     <ValueTypeResultDisplay 
@@ -196,12 +149,10 @@ export default function HomePage() {
                   ))}
                 </div>
               ) : (
-                !isLoading && !error && (
                   <div className="text-center text-muted-foreground mt-12 border-2 border-dashed border-border rounded-xl p-12">
                     <p className="text-lg">Your captured assessments will appear here.</p>
                     <p className="text-sm mt-2">Fill out the form on the left to get started.</p>
                   </div>
-                )
               )}
             </div>
           </div>
@@ -211,7 +162,6 @@ export default function HomePage() {
         </footer>
       </div>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!assessmentToDelete} onOpenChange={(open) => !open && setAssessmentToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -230,7 +180,6 @@ export default function HomePage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Prioritization Dialog */}
       <PrioritizationDialog 
         isOpen={isPrioritizationOpen}
         onClose={() => setIsPrioritizationOpen(false)}
