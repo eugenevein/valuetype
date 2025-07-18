@@ -36,8 +36,8 @@ export function ValueTypeResultDisplay({ data, onEdit, onDelete }: ValueTypeResu
   return (
     <Card className="relative">
        <CardHeader className="pb-2 pt-4 px-4">
-         <div className="flex justify-between items-start">
-            <div className="flex-1 pr-20">
+         <div className="flex justify-between items-start gap-4">
+            <div className="flex-1">
                 <CardTitle className="text-lg font-bold break-words">
                     {data.epicName}
                 </CardTitle>
@@ -48,7 +48,7 @@ export function ValueTypeResultDisplay({ data, onEdit, onDelete }: ValueTypeResu
                 </div>
             </div>
 
-            <div className="absolute top-2 right-2 flex items-center space-x-1">
+            <div className="flex items-center space-x-1 flex-shrink-0">
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEdit}>
                     <Pencil className="h-4 w-4" />
                     <span className="sr-only">Edit</span>
