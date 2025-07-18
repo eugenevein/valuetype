@@ -124,7 +124,7 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
                         {category.levelOptions.map((option: LevelOption) => (
                           <FormItem 
                             key={option.value} 
-                            className="flex items-center space-x-3 space-y-0 p-3 border rounded-md hover:bg-secondary/50 transition-colors cursor-pointer data-[state=checked]:bg-primary/10 data-[state=checked]:border-primary"
+                            className="flex items-center space-x-3 space-y-0 p-3 border rounded-md hover:bg-secondary/50 transition-colors cursor-pointer [&[data-state=checked]]:bg-primary/10 [&[data-state=checked]]:border-primary"
                           >
                             <FormControl>
                                <RadioGroupItem value={option.value} id={`${category.id}-${option.value}`} />
