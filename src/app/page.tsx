@@ -70,7 +70,6 @@ export default function HomePage() {
     setIsMutating(true);
     try {
       if (editingAssessment) {
-        // We only pass the data, not the userId, as it should not be changed on update.
         await updateAssessment(editingAssessment.id, data);
         toast({
           title: "Success!",
