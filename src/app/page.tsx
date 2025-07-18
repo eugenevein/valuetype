@@ -33,7 +33,10 @@ export default function HomePage() {
   
   const { data: assessments, isLoading: isLoadingAssessments } = useFirestoreQuery(
     'assessments',
-    { orderBy: ["createdAt", "desc"] }
+    { 
+      where: ["userId", "==", user?.uid],
+      orderBy: ["createdAt", "desc"] 
+    }
   );
 
   const [editingAssessment, setEditingAssessment] = React.useState<Assessment | null>(null);
@@ -67,6 +70,7 @@ export default function HomePage() {
     setIsMutating(true);
     try {
       if (editingAssessment) {
+        // We only pass the data, not the userId, as it should not be changed on update.
         await updateAssessment(editingAssessment.id, data);
         toast({
           title: "Success!",
@@ -74,7 +78,7 @@ export default function HomePage() {
         });
         setEditingAssessment(null);
       } else {
-        await createAssessment(data);
+        await createAssessment({ ...data, userId: user.uid });
         toast({
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been captured.`,
@@ -82,9 +86,10 @@ export default function HomePage() {
         form.reset(getDefaultValues());
       }
     } catch (error) {
+       console.error("Failed to save assessment:", error);
        toast({
-        title: "Error",
-        description: `Could not save the assessment. Please try again.`,
+        title: "Error Saving Assessment",
+        description: `Could not save the assessment. Please check the console for details and ensure your database rules are correct.`,
         variant: "destructive",
       });
     } finally {
@@ -123,9 +128,10 @@ export default function HomePage() {
         });
         setAssessmentToDelete(null);
       } catch (e) {
+        console.error("Failed to delete assessment:", e);
         toast({
-               title: "Error",
-               description: "Could not delete the assessment. Please try again.",
+               title: "Error Deleting Assessment",
+               description: "Could not delete the assessment. Please check console for details.",
                variant: "destructive",
         });
       } finally {
@@ -136,7 +142,7 @@ export default function HomePage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-slate-50">
         <AppHeader />
         <main className="container mx-auto px-4 py-8 flex-grow">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
