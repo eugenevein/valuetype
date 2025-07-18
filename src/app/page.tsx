@@ -89,7 +89,7 @@ export default function HomePage() {
        console.error("Failed to save assessment:", error);
        toast({
         title: "Error Saving Assessment",
-        description: `Could not save the assessment. Please check the console for details and ensure your database rules are correct.`,
+        description: `Could not save the assessment. Please check your Firestore rules and browser console for details.`,
         variant: "destructive",
       });
     } finally {
@@ -131,7 +131,7 @@ export default function HomePage() {
         console.error("Failed to delete assessment:", e);
         toast({
                title: "Error Deleting Assessment",
-               description: "Could not delete the assessment. Please check console for details.",
+               description: "Could not delete the assessment. Please check your Firestore rules and browser console for details.",
                variant: "destructive",
         });
       } finally {
@@ -142,7 +142,7 @@ export default function HomePage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen flex flex-col bg-slate-50">
+      <div className="min-h-screen flex flex-col bg-background">
         <AppHeader />
         <main className="container mx-auto px-4 py-8 flex-grow">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
