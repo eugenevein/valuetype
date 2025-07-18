@@ -24,6 +24,7 @@ import { PrioritizationDialog } from '@/components/prioritization-dialog';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { ListChecks, Loader2 } from 'lucide-react';
 import type { Assessment } from '@/services/assessment-service';
+import AuthGuard from '@/components/auth-guard';
 
 export default function HomePage() {
   const [assessments, setAssessments] = React.useState<Assessment[]>([]);
@@ -55,28 +56,36 @@ export default function HomePage() {
     // Simulate async operation
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    if (editingAssessment) {
-      setAssessments(prev => prev.map(a => a.id === editingAssessment.id ? { ...editingAssessment, ...data } : a));
-      toast({
-        title: "Success!",
-        description: `Assessment for "${data.epicName}" has been updated.`,
+    try {
+      if (editingAssessment) {
+        setAssessments(prev => prev.map(a => a.id === editingAssessment.id ? { ...editingAssessment, ...data } : a));
+        toast({
+          title: "Success!",
+          description: `Assessment for "${data.epicName}" has been updated.`,
+        });
+        setEditingAssessment(null);
+      } else {
+        const newAssessment: Assessment = {
+          id: new Date().toISOString(),
+          ...data,
+          createdAt: new Date() as any, // Using Date for local state
+        };
+        setAssessments(prev => [newAssessment, ...prev]);
+        toast({
+          title: "Success!",
+          description: `Assessment for "${data.epicName}" has been captured.`,
+        });
+        form.reset(getDefaultValues());
+      }
+    } catch (error) {
+       toast({
+        title: "Error",
+        description: `Could not save the assessment. Please try again.`,
+        variant: "destructive",
       });
-      setEditingAssessment(null);
-    } else {
-      const newAssessment: Assessment = {
-        id: new Date().toISOString(),
-        ...data,
-        createdAt: new Date() as any, // Using Date for local state
-      };
-      setAssessments(prev => [newAssessment, ...prev]);
-      toast({
-        title: "Success!",
-        description: `Assessment for "${data.epicName}" has been captured.`,
-      });
-      form.reset(getDefaultValues());
+    } finally {
+      setIsMutating(false);
     }
-
-    setIsMutating(false);
   };
 
   const handleEdit = (id: string) => {
@@ -102,19 +111,28 @@ export default function HomePage() {
     if (assessmentToDelete) {
       setIsMutating(true);
       await new Promise(resolve => setTimeout(resolve, 500));
-      setAssessments(prev => prev.filter(a => a.id !== assessmentToDelete.id));
-      toast({
-          title: "Deleted",
-          description: `Assessment for "${assessmentToDelete.epicName}" has been removed.`,
-          variant: "destructive",
-      });
-      setAssessmentToDelete(null);
-      setIsMutating(false);
+       try {
+        setAssessments(prev => prev.filter(a => a.id !== assessmentToDelete.id));
+        toast({
+            title: "Deleted",
+            description: `Assessment for "${assessmentToDelete.epicName}" has been removed.`,
+            variant: "destructive",
+        });
+        setAssessmentToDelete(null);
+      } catch (e) {
+        toast({
+               title: "Error",
+               description: "Could not delete the assessment. Please try again.",
+               variant: "destructive",
+        });
+      } finally {
+        setIsMutating(false);
+      }
     }
   }
 
   return (
-    <>
+    <AuthGuard>
       <div className="min-h-screen flex flex-col">
         <AppHeader />
         <main className="container mx-auto px-4 py-8 flex-grow">
@@ -185,6 +203,6 @@ export default function HomePage() {
         onClose={() => setIsPrioritizationOpen(false)}
         assessments={assessments || []}
       />
-    </>
+    </AuthGuard>
   );
 }
