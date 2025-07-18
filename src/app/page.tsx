@@ -28,7 +28,10 @@ import { assessmentService, type Assessment } from '@/services/assessment-servic
 
 
 export default function HomePage() {
-  const { data: assessments, isLoading, error } = useFirestoreQuery('assessments');
+  // Request sorted data directly from Firestore
+  const { data: assessments, isLoading, error } = useFirestoreQuery('assessments', {
+    orderBy: ['createdAt', 'desc']
+  });
 
   const [editingAssessment, setEditingAssessment] = React.useState<Assessment | null>(null);
   const [assessmentToDelete, setAssessmentToDelete] = React.useState<Assessment | null>(null);
@@ -70,9 +73,6 @@ export default function HomePage() {
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been captured.`,
         });
-        // We no longer call form.reset() here. The useEffect handles it when editingAssessment changes.
-        // For new items, the form is already in the default state or will be reset by the effect if an edit is cancelled.
-        // To be safe, we can trigger the effect for new items as well by just resetting the form manually.
         form.reset(getDefaultValues()); // Reset form for new entry after submission
       }
     } catch (e) {
@@ -127,12 +127,6 @@ export default function HomePage() {
       }
     }
   }
-  
-  const sortedAssessments = React.useMemo(() => {
-    if (!assessments) return [];
-    // Sort by creation time, newest first. Assumes a 'createdAt' field.
-    return [...assessments].sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-  }, [assessments]);
 
   return (
     <>
@@ -173,7 +167,7 @@ export default function HomePage() {
 
               {!isLoading && !error && assessments && assessments.length > 0 ? (
                 <div className="space-y-4">
-                  {sortedAssessments.map((data) => (
+                  {assessments.map((data) => (
                     <ValueTypeResultDisplay 
                       key={data.id} 
                       data={data}
