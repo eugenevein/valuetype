@@ -2,81 +2,183 @@
 "use client";
 
 import * as React from 'react';
-import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  type AuthError,
+} from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, Zap } from 'lucide-react';
-
-const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 48 48" {...props}>
-    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.82l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-    <path fill="none" d="M0 0h48v48H0z"/>
-  </svg>
-);
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { loginSchema, type LoginFormData } from './schema';
+import { Loader2, Zap, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function LoginPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [isSigningIn, setIsSigningIn] = React.useState(true);
+  const [mode, setMode] = React.useState<'signin' | 'signup'>('signin');
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [authError, setAuthError] = React.useState<string | null>(null);
+
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
   React.useEffect(() => {
-    if (!authLoading) {
-      if (user) {
-        router.push('/');
-      } else {
-        // Check for redirect result
-        getRedirectResult(auth)
-          .then((result) => {
-            if (result) {
-              // This means the user has just signed in.
-              // The useAuth hook will handle the user state update and redirect.
-            }
-          })
-          .catch((error) => {
-            console.error("Authentication error:", error);
-          })
-          .finally(() => {
-             setIsSigningIn(false);
-          });
-      }
+    if (!authLoading && user) {
+      router.push('/');
     }
   }, [user, authLoading, router]);
 
-  const handleSignIn = async () => {
-    setIsSigningIn(true);
-    const provider = new GoogleAuthProvider();
-    await signInWithRedirect(auth, provider);
+  const handleAuthError = (error: AuthError) => {
+    switch (error.code) {
+      case 'auth/invalid-email':
+        return 'Please enter a valid email address.';
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+        return 'Invalid email or password. Please try again.';
+      case 'auth/email-already-in-use':
+        return 'This email address is already registered. Please sign in.';
+      case 'auth/weak-password':
+        return 'The password must be at least 6 characters long.';
+      default:
+        return 'An unexpected error occurred. Please try again.';
+    }
   };
 
-  if (authLoading || isSigningIn) {
+  const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
+    setAuthError(null);
+    try {
+      if (mode === 'signup') {
+        await createUserWithEmailAndPassword(auth, data.email, data.password);
+      } else {
+        await signInWithEmailAndPassword(auth, data.email, data.password);
+      }
+      // The useAuth hook will detect the new user state and redirect.
+    } catch (error) {
+      setAuthError(handleAuthError(error as AuthError));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const toggleMode = () => {
+    setMode(mode === 'signin' ? 'signup' : 'signin');
+    setAuthError(null);
+    form.reset();
+  };
+
+  if (authLoading || user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-secondary">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
-           <div className="flex justify-center items-center mb-4">
-             <Zap className="h-10 w-10 text-primary" />
-           </div>
-           <CardTitle className="text-2xl font-bold">Value Type Generator</CardTitle>
-           <CardDescription>Sign in to continue to your dashboard</CardDescription>
+          <div className="flex justify-center items-center mb-4">
+            <Zap className="h-10 w-10 text-primary" />
+          </div>
+          <CardTitle className="text-2xl font-bold">Value Type Generator</CardTitle>
+          <CardDescription>
+            {mode === 'signin'
+              ? 'Sign in to your account'
+              : 'Create a new account'}
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button onClick={handleSignIn} className="w-full" disabled={isSigningIn}>
-            <GoogleIcon className="mr-2 h-5 w-5" />
-            Sign in with Google
-          </Button>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {authError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{authError}</AlertDescription>
+                </Alert>
+              )}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="you@example.com"
+                        {...field}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                {mode === 'signin' ? 'Sign In' : 'Create Account'}
+              </Button>
+            </form>
+          </Form>
+          <div className="mt-4 text-center text-sm">
+            {mode === 'signin' ? "Don't have an account?" : 'Already have an account?'}
+            <Button
+              variant="link"
+              className="pl-1"
+              onClick={toggleMode}
+              disabled={isLoading}
+            >
+              {mode === 'signin' ? 'Sign Up' : 'Sign In'}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

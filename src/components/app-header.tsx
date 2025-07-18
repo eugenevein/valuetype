@@ -14,6 +14,16 @@ export function AppHeader() {
     await auth.signOut();
   };
 
+  const getInitials = () => {
+    if (user?.displayName) {
+      return user.displayName.charAt(0).toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
+    return '?';
+  };
+
   return (
     <header className="py-4 border-b">
       <div className="container mx-auto flex items-center justify-between">
@@ -27,8 +37,8 @@ export function AppHeader() {
         {user && (
           <div className="flex items-center gap-4">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'User'} />
-              <AvatarFallback>{user.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+              <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? user.email ?? 'User'} />
+              <AvatarFallback>{getInitials()}</AvatarFallback>
             </Avatar>
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
