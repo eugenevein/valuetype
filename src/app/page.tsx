@@ -151,7 +151,7 @@ export default function HomePage() {
       <div className="min-h-screen flex flex-col">
         <AppHeader />
         <main className="container mx-auto px-4 py-8 flex-grow">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
               <ValueTypeForm 
                 form={form}
@@ -162,11 +162,11 @@ export default function HomePage() {
               />
             </div>
             <div>
-              <div className="flex justify-between items-center mb-6">
-                 <h2 className="text-2xl font-bold text-primary">Captured Assessments</h2>
+              <div className="flex justify-between items-center mb-4">
+                 <h2 className="text-xl font-bold">Captured Assessments</h2>
                  <Button onClick={() => setIsPrioritizationOpen(true)} disabled={!assessments || assessments.length < 2}>
                     <ListChecks className="mr-2 h-4 w-4" />
-                    Prioritize Epics
+                    Prioritize
                  </Button>
               </div>
 

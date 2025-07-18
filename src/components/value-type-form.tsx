@@ -46,19 +46,19 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-        <Card className="shadow-lg rounded-xl overflow-hidden">
+        <Card>
             <CardHeader>
-                <CardTitle className="text-2xl font-semibold text-primary">Epic Details</CardTitle>
+                <CardTitle className="text-xl">Epic Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4">
                 <FormField
                   control={form.control}
                   name="epicName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base font-semibold">Epic Name</FormLabel>
+                      <FormLabel>Epic Name</FormLabel>
                       <FormControl>
                         <Input placeholder="e.g., Implement New User Dashboard" {...field} />
                       </FormControl>
@@ -71,8 +71,8 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
                   name="tShirtSize"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base font-semibold flex items-center">
-                        <Shirt className="mr-2 h-5 w-5" /> T-Shirt Size (Effort)
+                      <FormLabel className="flex items-center">
+                        <Shirt className="mr-2 h-4 w-4" /> T-Shirt Size (Effort)
                       </FormLabel>
                        <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
@@ -96,10 +96,10 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
         </Card>
 
         {VALUE_TYPES_CONFIG.map((category) => (
-          <Card key={category.id} className="shadow-lg rounded-xl overflow-hidden">
-            <CardHeader className="bg-card">
-              <CardTitle className="flex items-center text-2xl font-semibold text-primary">
-                <category.icon className="mr-3 h-7 w-7" />
+          <Card key={category.id}>
+            <CardHeader>
+              <CardTitle className="flex items-center text-xl">
+                <category.icon className="mr-3 h-6 w-6" />
                 {category.label}
               </CardTitle>
               {category.categoryDescription && (
@@ -108,13 +108,13 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
                 </CardDescription>
               )}
             </CardHeader>
-            <CardContent className="space-y-6 pt-2 pb-6 px-6">
+            <CardContent className="space-y-4">
               <FormField
                 control={form.control}
                 name={`${category.id}.level` as const}
                 render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel className="text-base font-semibold text-foreground">Select Impact Level</FormLabel>
+                  <FormItem className="space-y-2">
+                    <FormLabel>Select Impact Level</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -124,16 +124,16 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
                         {category.levelOptions.map((option: LevelOption) => (
                           <FormItem 
                             key={option.value} 
-                            className="flex items-center space-x-3 space-y-0 p-4 border rounded-lg shadow-sm hover:bg-secondary/50 transition-colors cursor-pointer data-[state=checked]:bg-primary/10 data-[state=checked]:border-primary"
+                            className="flex items-center space-x-3 space-y-0 p-3 border rounded-md hover:bg-secondary/50 transition-colors cursor-pointer data-[state=checked]:bg-primary/10 data-[state=checked]:border-primary"
                           >
                             <FormControl>
                                <RadioGroupItem value={option.value} id={`${category.id}-${option.value}`} />
                             </FormControl>
                             <FormLabel htmlFor={`${category.id}-${option.value}`} className="flex-1 cursor-pointer">
-                                <div className="font-medium text-foreground capitalize">
+                                <div className="font-medium capitalize">
                                     {option.label}
                                 </div>
-                                <FormDescription className="text-sm text-muted-foreground">
+                                <FormDescription className="text-sm">
                                     {option.description}
                                 </FormDescription>
                             </FormLabel>
@@ -150,11 +150,11 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
                 name={`${category.id}.notes` as const}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base font-semibold text-foreground">Why such value?</FormLabel>
+                    <FormLabel>Why such value?</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder={`Explain your reasoning for ${category.label.toLowerCase()}. Keep this text compact.`}
-                        className="resize-y min-h-[100px] bg-background focus:ring-primary focus:border-primary"
+                        placeholder={`Explain your reasoning...`}
+                        className="resize-y"
                         {...field}
                       />
                     </FormControl>
@@ -166,14 +166,14 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
           </Card>
         ))}
 
-        <Card className="shadow-lg rounded-xl overflow-hidden">
-          <CardHeader className="bg-card">
-            <CardTitle className="flex items-center text-2xl font-semibold text-primary">
-              <AlertCircle className="mr-3 h-7 w-7" />
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center text-xl">
+              <AlertCircle className="mr-3 h-6 w-6" />
               Impact of Not Doing
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-2 pb-6 px-6">
+          <CardContent>
             <FormField
               control={form.control}
               name="overallConsiderations"
@@ -182,8 +182,8 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
                   <FormLabel className="sr-only">Impact of not doing</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe potential consequences. Keep this text compact."
-                      className="resize-y min-h-[120px] bg-background focus:ring-primary focus:border-primary"
+                      placeholder="Describe potential consequences..."
+                      className="resize-y"
                       {...field}
                     />
                   </FormControl>
@@ -194,16 +194,16 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
           </CardContent>
         </Card>
         
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 pt-2">
             {isEditing && (
-              <Button type="button" variant="outline" onClick={onCancelEdit} className="w-full text-lg py-6 rounded-lg shadow-md">
+              <Button type="button" variant="outline" onClick={onCancelEdit} className="w-full">
                 Cancel Edit
               </Button>
             )}
-            <Button type="submit" className="w-full text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg shadow-md focus:ring-2 focus:ring-accent focus:ring-offset-2" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {isEditing ? 'Updating...' : 'Capturing...'}
                 </>
               ) : (
