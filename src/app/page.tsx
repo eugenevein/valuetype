@@ -70,7 +70,9 @@ export default function HomePage() {
     setIsMutating(true);
     try {
       if (editingAssessment) {
-        await withTimeout(updateAssessment(editingAssessment.id, data));
+        // When updating, we pass the full data object which includes the userId.
+        const updateData = { ...editingAssessment, ...data };
+        await withTimeout(updateAssessment(editingAssessment.id, updateData));
         toast({
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been updated.`,

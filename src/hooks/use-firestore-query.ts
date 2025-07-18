@@ -26,7 +26,7 @@ export function useFirestoreQuery(path: string | null, options: QueryOptions = {
     // Don't run query if path is null or if a `where` clause is waiting for a value (e.g., user.uid)
     if (!path || (whereField && whereValue === undefined)) {
       setIsLoading(false);
-      setData([]); // Return empty array if query can't run
+      setData([]); // Return empty array if query can't run yet
       return;
     }
     
@@ -50,6 +50,7 @@ export function useFirestoreQuery(path: string | null, options: QueryOptions = {
         }));
         setData(docs);
         setIsLoading(false);
+        setError(null);
       },
       (err) => {
         console.error("Firestore query error:", err);

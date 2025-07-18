@@ -24,9 +24,9 @@ export const createAssessment = async (data: CreateAssessmentData) => {
 
 export const updateAssessment = async (assessmentId: string, data: Partial<ValueTypeFormData>) => {
     const assessmentDocRef = doc(db, 'assessments', assessmentId);
-    // userId should not be updated after creation, so we remove it from the update payload.
-    const { userId, ...updateData } = data as any;
-    return updateDoc(assessmentDocRef, updateData);
+    // The userId should not be updated after creation, so we explicitly keep it.
+    // However, the rules should prevent this anyway. Let's send the full object.
+    return updateDoc(assessmentDocRef, data as any);
 };
 
 export const deleteAssessment = async (assessmentId: string) => {
