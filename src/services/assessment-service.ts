@@ -3,14 +3,12 @@ import { db } from '@/lib/firebase';
 import type { ValueTypeFormData } from '@/components/value-type-form-schema';
 import { collection, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 
-// Add userId to the data structure
 export interface Assessment extends ValueTypeFormData {
   id: string;
   createdAt: any; 
   userId: string;
 }
 
-// Add userId to the create data payload
 export interface CreateAssessmentData extends ValueTypeFormData {
     userId: string;
 }
@@ -18,7 +16,7 @@ export interface CreateAssessmentData extends ValueTypeFormData {
 const assessmentsCollection = collection(db, 'assessments');
 
 export const createAssessment = async (data: CreateAssessmentData) => {
-    await addDoc(assessmentsCollection, {
+    return addDoc(assessmentsCollection, {
         ...data,
         createdAt: serverTimestamp(),
     });
@@ -26,12 +24,31 @@ export const createAssessment = async (data: CreateAssessmentData) => {
 
 export const updateAssessment = async (assessmentId: string, data: Partial<ValueTypeFormData>) => {
     const assessmentDocRef = doc(db, 'assessments', assessmentId);
-    // Ensure userId is not part of the update data
     const { userId, ...updateData } = data as any;
-    await updateDoc(assessmentDocRef, updateData);
+    return updateDoc(assessmentDocRef, updateData);
 };
 
 export const deleteAssessment = async (assessmentId: string) => {
     const assessmentDocRef = doc(db, 'assessments', assessmentId);
-    await deleteDoc(assessmentDocRef);
+    return deleteDoc(assessmentDocRef);
 };
+
+// Wraps a promise in a timeout
+export function withTimeout<T>(promise: Promise<T>, ms = 10000): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error("Operation timed out"));
+    }, ms);
+
+    promise.then(
+      (res) => {
+        clearTimeout(timeoutId);
+        resolve(res);
+      },
+      (err) => {
+        clearTimeout(timeoutId);
+        reject(err);
+      }
+    );
+  });
+}

@@ -25,7 +25,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { ListChecks, Loader2 } from 'lucide-react';
 import AuthGuard from '@/components/auth-guard';
 import { useAuth } from '@/hooks/use-auth';
-import { createAssessment, deleteAssessment, updateAssessment, type Assessment } from '@/services/assessment-service';
+import { createAssessment, deleteAssessment, updateAssessment, type Assessment, withTimeout } from '@/services/assessment-service';
 import { useFirestoreQuery } from '@/hooks/use-firestore-query';
 
 export default function HomePage() {
@@ -70,25 +70,27 @@ export default function HomePage() {
     setIsMutating(true);
     try {
       if (editingAssessment) {
-        await updateAssessment(editingAssessment.id, data);
+        await withTimeout(updateAssessment(editingAssessment.id, data));
         toast({
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been updated.`,
         });
         setEditingAssessment(null);
       } else {
-        await createAssessment({ ...data, userId: user.uid });
+        await withTimeout(createAssessment({ ...data, userId: user.uid }));
         toast({
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been captured.`,
         });
         form.reset(getDefaultValues());
       }
-    } catch (error) {
+    } catch (error: any) {
        console.error("Failed to save assessment:", error);
        toast({
         title: "Error Saving Assessment",
-        description: `Could not save the assessment. Please check your Firestore rules and browser console for details.`,
+        description: error.message === 'Operation timed out' 
+          ? 'The request to the database timed out. Please check your connection and Firestore rules.'
+          : 'Could not save the assessment. Please check the browser console for details.',
         variant: "destructive",
       });
     } finally {
@@ -119,18 +121,20 @@ export default function HomePage() {
     if (assessmentToDelete && user) {
       setIsMutating(true);
       try {
-        await deleteAssessment(assessmentToDelete.id);
+        await withTimeout(deleteAssessment(assessmentToDelete.id));
         toast({
             title: "Deleted",
             description: `Assessment for "${assessmentToDelete.epicName}" has been removed.`,
             variant: "destructive",
         });
         setAssessmentToDelete(null);
-      } catch (e) {
-        console.error("Failed to delete assessment:", e);
+      } catch (error: any) {
+        console.error("Failed to delete assessment:", error);
         toast({
                title: "Error Deleting Assessment",
-               description: "Could not delete the assessment. Please check your Firestore rules and browser console for details.",
+               description: error.message === 'Operation timed out'
+                ? 'The request to the database timed out. Please check your connection and Firestore rules.'
+                : 'Could not delete the assessment. Please check the browser console for details.',
                variant: "destructive",
         });
       } finally {
