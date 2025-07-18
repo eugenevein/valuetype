@@ -70,7 +70,10 @@ export default function HomePage() {
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been captured.`,
         });
-        form.reset(getDefaultValues()); // Reset form for new entry
+        // We no longer call form.reset() here. The useEffect handles it when editingAssessment changes.
+        // For new items, the form is already in the default state or will be reset by the effect if an edit is cancelled.
+        // To be safe, we can trigger the effect for new items as well by just resetting the form manually.
+        form.reset(getDefaultValues()); // Reset form for new entry after submission
       }
     } catch (e) {
         toast({
