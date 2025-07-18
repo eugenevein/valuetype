@@ -78,7 +78,8 @@ export default function HomePage() {
         });
         setEditingAssessment(null);
       } else {
-        await createAssessment({ ...data, userId: user.uid });
+        const newAssessmentData = { ...data, userId: user.uid };
+        await createAssessment(newAssessmentData);
         toast({
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been captured.`,
