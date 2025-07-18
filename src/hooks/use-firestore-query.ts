@@ -15,8 +15,6 @@ export function useFirestoreQuery(path: string | null, options: QueryOptions = {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    // If the path is null, don't attempt to query.
-    // This is useful for waiting on user authentication.
     if (!path) {
       setIsLoading(false);
       return;
@@ -45,9 +43,8 @@ export function useFirestoreQuery(path: string | null, options: QueryOptions = {
       }
     );
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, [path, options.orderBy?.[0], options.orderBy?.[1]]); // Re-run effect if path or orderBy changes
+  }, [path, options.orderBy?.[0], options.orderBy?.[1]]);
 
   return { data, isLoading, error };
 }

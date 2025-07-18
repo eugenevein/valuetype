@@ -32,7 +32,7 @@ export default function HomePage() {
   const { user } = useAuth();
   
   const { data: assessments, isLoading: isLoadingAssessments } = useFirestoreQuery(
-    user ? `users/${user.uid}/assessments` : null,
+    'assessments',
     { orderBy: ["createdAt", "desc"] }
   );
 
@@ -67,14 +67,14 @@ export default function HomePage() {
     setIsMutating(true);
     try {
       if (editingAssessment) {
-        await updateAssessment(user.uid, editingAssessment.id, data);
+        await updateAssessment(editingAssessment.id, data);
         toast({
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been updated.`,
         });
         setEditingAssessment(null);
       } else {
-        await createAssessment(user.uid, data);
+        await createAssessment(data);
         toast({
           title: "Success!",
           description: `Assessment for "${data.epicName}" has been captured.`,
@@ -115,7 +115,7 @@ export default function HomePage() {
     if (assessmentToDelete && user) {
       setIsMutating(true);
       try {
-        await deleteAssessment(user.uid, assessmentToDelete.id);
+        await deleteAssessment(assessmentToDelete.id);
         toast({
             title: "Deleted",
             description: `Assessment for "${assessmentToDelete.epicName}" has been removed.`,

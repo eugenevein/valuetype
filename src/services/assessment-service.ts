@@ -6,28 +6,23 @@ import { collection, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from '
 export interface Assessment extends ValueTypeFormData {
   id: string;
   createdAt: any; 
-  userId: string;
 }
 
-const getAssessmentsCollection = (userId: string) => {
-    return collection(db, `users/${userId}/assessments`);
-}
+const assessmentsCollection = collection(db, 'assessments');
 
-export const createAssessment = async (userId: string, data: ValueTypeFormData) => {
-    const assessmentsCollection = getAssessmentsCollection(userId);
+export const createAssessment = async (data: ValueTypeFormData) => {
     await addDoc(assessmentsCollection, {
         ...data,
-        userId: userId,
         createdAt: serverTimestamp(),
     });
 };
 
-export const updateAssessment = async (userId: string, assessmentId: string, data: Partial<ValueTypeFormData>) => {
-    const assessmentDocRef = doc(db, `users/${userId}/assessments`, assessmentId);
+export const updateAssessment = async (assessmentId: string, data: Partial<ValueTypeFormData>) => {
+    const assessmentDocRef = doc(db, 'assessments', assessmentId);
     await updateDoc(assessmentDocRef, data);
 };
 
-export const deleteAssessment = async (userId: string, assessmentId: string) => {
-    const assessmentDocRef = doc(db, `users/${userId}/assessments`, assessmentId);
+export const deleteAssessment = async (assessmentId: string) => {
+    const assessmentDocRef = doc(db, 'assessments', assessmentId);
     await deleteDoc(assessmentDocRef);
 };
