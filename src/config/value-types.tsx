@@ -5,8 +5,8 @@ import type { LucideIcon } from 'lucide-react';
 import { TimerIcon, TrendingUpIcon, TargetIcon, CircleDollarSignIcon, BanknoteIcon } from 'lucide-react';
 import type { ValueTypeFormData } from '@/components/value-type-form-schema';
 
-export type ValueLevel = 'high' | 'mid' | 'low';
-export type ValueCategoryKey = Exclude<keyof ValueTypeFormData, 'overallConsiderations' | 'epicName' | 'tShirtSize'>;
+export type ValueLevel = 'high' | 'mid' | 'low' | 'na';
+export type ValueCategoryKey = Exclude<keyof ValueTypeFormData, 'overallConsiderations' | 'epicName' | 'tShirtSize' | 'confidence'>;
 
 export interface LevelOption {
   value: ValueLevel;
@@ -84,6 +84,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
       { value: 'high', label: 'High', description: 'BC value > €1mio p.a.' },
       { value: 'mid', label: 'Mid', description: '€500k < BC value < €1mio p.a.' },
       { value: 'low', label: 'Low', description: 'BC value < €500k p.a.' },
+      { value: 'na', label: 'N/A', description: 'Not applicable for this epic.' },
     ],
   },
   {
@@ -113,6 +114,7 @@ export const VALUE_TYPES_CONFIG: ValueTypeConfig[] = [
       { value: 'high', label: 'High', description: 'Technical (Affecting functionalities)' },
       { value: 'mid', label: 'Mid', description: 'Improve Automation (Reduce existing costs)' },
       { value: 'low', label: 'Low', description: 'Technical (Prevent future costs)' },
+      { value: 'na', label: 'N/A', description: 'Not applicable for this epic.' },
     ],
   },
 ];

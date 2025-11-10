@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { ChevronsUpDown, ChevronUp, ChevronDown, Repeat } from 'lucide-react';
 import type { Assessment } from '@/services/assessment-service';
-import { VALUE_TYPES_CONFIG, type ValueCategoryKey } from '@/config/value-types.tsx';
+import { VALUE_TYPES_CONFIG, type ValueCategoryKey, type ValueLevel } from '@/config/value-types.tsx';
 import { cn } from '@/lib/utils';
 
 interface PrioritizationDialogProps {
@@ -18,7 +18,7 @@ interface PrioritizationDialogProps {
   assessments: Assessment[];
 }
 
-const levelPoints: { [key: string]: number } = { low: 1, mid: 2, high: 3 };
+const levelPoints: { [key in ValueLevel]: number } = { low: 1, mid: 2, high: 3, na: 0 };
 const tShirtSizePoints: { [key: string]: number } = { xs: 1, s: 2, m: 3, l: 4, xl: 5 };
 const confidencePoints: { [key: string]: number } = { low: 1, mid: 2, high: 3 };
 
@@ -225,5 +225,3 @@ export function PrioritizationDialog({ isOpen, onClose, assessments }: Prioritiz
     </Dialog>
   );
 }
-
-    

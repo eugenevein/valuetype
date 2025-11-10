@@ -2,7 +2,7 @@
 "use client";
 
 import type { Assessment } from '@/services/assessment-service';
-import { VALUE_TYPES_CONFIG, type ValueCategoryKey } from '@/config/value-types.tsx';
+import { VALUE_TYPES_CONFIG, type ValueCategoryKey, type ValueLevel } from '@/config/value-types.tsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -15,7 +15,7 @@ interface ValueTypeResultDisplayProps {
   onDelete: () => void;
 }
 
-const getValueStyles = (value: 'high' | 'mid' | 'low') => {
+const getValueStyles = (value: ValueLevel) => {
   switch (value) {
     case 'high':
       return 'bg-red-500 hover:bg-red-500/90 text-white border-red-700';
@@ -23,6 +23,8 @@ const getValueStyles = (value: 'high' | 'mid' | 'low') => {
       return 'bg-yellow-400 hover:bg-yellow-400/90 text-yellow-900 border-yellow-600';
     case 'low':
       return 'bg-green-500 hover:bg-green-500/90 text-white border-green-700';
+    case 'na':
+       return 'bg-gray-400 hover:bg-gray-400/90 text-white border-gray-600';
     default:
       return 'bg-secondary text-secondary-foreground border-transparent';
   }

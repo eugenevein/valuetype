@@ -38,8 +38,8 @@ export const getDefaultValues = (): ValueTypeFormData => ({
   urgency: { level: 'mid', notes: '' },
   marketImpact: { level: 'mid', notes: '' },
   strategic: { level: 'mid', notes: '' },
-  revenue: { level: 'mid', notes: '' },
-  cost: { level: 'mid', notes: '' },
+  revenue: { level: 'na', notes: '' },
+  cost: { level: 'na', notes: '' },
   overallConsiderations: '',
 });
 
