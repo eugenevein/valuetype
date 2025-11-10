@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AlertCircle, Loader2, Shirt } from 'lucide-react';
+import { AlertCircle, Loader2, Shirt, Sparkles } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ValueTypeFormProps {
@@ -34,6 +34,7 @@ interface ValueTypeFormProps {
 export const getDefaultValues = (): ValueTypeFormData => ({
   epicName: '',
   tShirtSize: 'm',
+  confidence: 'high',
   urgency: { level: 'mid', notes: '' },
   marketImpact: { level: 'mid', notes: '' },
   strategic: { level: 'mid', notes: '' },
@@ -92,6 +93,30 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="confidence"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center">
+                        <Sparkles className="mr-2 h-4 w-4" /> Confidence
+                      </FormLabel>
+                       <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a confidence level..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="high">High</SelectItem>
+                          <SelectItem value="mid">Mid</SelectItem>
+                          <SelectItem value="low">Low</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
             </CardContent>
         </Card>
 
@@ -124,7 +149,7 @@ export function ValueTypeForm({ form, onSubmit, isLoading, isEditing, onCancelEd
                         {category.levelOptions.map((option: LevelOption) => (
                           <FormItem 
                             key={option.value} 
-                            className="flex items-center space-x-3 space-y-0 p-3 border rounded-md hover:bg-secondary/50 transition-colors cursor-pointer [&[data-state=checked]]:bg-primary/10 [&[data-state=checked]]:border-primary"
+                            className="flex items-center space-x-3 space-y-0 p-3 border rounded-md hover:bg-secondary/50 transition-colors cursor-pointer data-[state=checked]:bg-primary/10 data-[state=checked]:border-primary"
                           >
                             <FormControl>
                                <RadioGroupItem value={option.value} id={`${category.id}-${option.value}`} />

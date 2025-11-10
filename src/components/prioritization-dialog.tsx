@@ -20,6 +20,8 @@ interface PrioritizationDialogProps {
 
 const levelPoints: { [key: string]: number } = { low: 1, mid: 2, high: 3 };
 const tShirtSizePoints: { [key: string]: number } = { xs: 1, s: 2, m: 3, l: 4, xl: 5 };
+const confidencePoints: { [key: string]: number } = { low: 1, mid: 2, high: 3 };
+
 
 type PrioritizationCriteria = ValueCategoryKey | 'roi';
 
@@ -41,12 +43,17 @@ const directPrioritization = (assessments: Assessment[]) => {
   return [...assessments]
     .map(a => ({ ...a, score: calculateDirectScore(a) }))
     .sort((a, b) => {
-      // First, sort by score in descending order
+      // 1. Sort by score (descending)
       if (b.score !== a.score) {
         return b.score - a.score;
       }
-      // If scores are equal, sort by T-shirt size in ascending order (smaller is better)
-      return tShirtSizePoints[a.tShirtSize] - tShirtSizePoints[b.tShirtSize];
+      // 2. Sort by T-shirt size (ascending - smaller is better)
+      const sizeDiff = tShirtSizePoints[a.tShirtSize] - tShirtSizePoints[b.tShirtSize];
+      if (sizeDiff !== 0) {
+        return sizeDiff;
+      }
+      // 3. Sort by confidence (descending - higher is better)
+      return confidencePoints[b.confidence] - confidencePoints[a.confidence];
     });
 };
 
@@ -132,7 +139,7 @@ export function PrioritizationDialog({ isOpen, onClose, assessments }: Prioritiz
           {/* Direct Prioritization */}
           <div className="space-y-4">
             <h3 className="font-semibold text-lg text-card-foreground">Direct Prioritization</h3>
-            <p className="text-sm text-muted-foreground">Epics sorted by value score, then by effort (T-shirt size).</p>
+            <p className="text-sm text-muted-foreground">Epics sorted by value score, then effort, then confidence.</p>
             <div className="border rounded-lg">
                 <Table>
                     <TableHeader>

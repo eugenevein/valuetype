@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2, Shirt } from 'lucide-react';
+import { Pencil, Trash2, Shirt, Sparkles } from 'lucide-react';
 
 interface ValueTypeResultDisplayProps {
   data: Assessment;
@@ -37,14 +37,19 @@ export function ValueTypeResultDisplay({ data, onEdit, onDelete }: ValueTypeResu
     <Card className="relative">
        <CardHeader className="pb-2 pt-4 px-4">
          <div className="flex justify-between items-start gap-4">
-            <div className="flex-1">
+            <div className="flex-1 space-y-1">
                 <CardTitle className="text-lg font-bold break-words">
                     {data.epicName}
                 </CardTitle>
-                <div className="flex items-center mt-1 text-sm text-muted-foreground">
+                <div className="flex items-center text-sm text-muted-foreground">
                     <Shirt className="mr-1.5 h-4 w-4"/>
                     <span>T-Shirt Size:</span>
                     <Badge variant="secondary" className="ml-2 uppercase">{data.tShirtSize}</Badge>
+                </div>
+                 <div className="flex items-center text-sm text-muted-foreground">
+                    <Sparkles className="mr-1.5 h-4 w-4"/>
+                    <span>Confidence:</span>
+                    <Badge variant="secondary" className="ml-2 capitalize">{data.confidence}</Badge>
                 </div>
             </div>
 

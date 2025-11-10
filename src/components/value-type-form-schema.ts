@@ -14,6 +14,9 @@ export const valueTypeFormSchema = z.object({
   tShirtSize: z.enum(['xs', 's', 'm', 'l', 'xl'], {
     required_error: "Please select a T-shirt size.",
   }),
+  confidence: z.enum(['high', 'mid', 'low'], {
+    required_error: "Please select a confidence level.",
+  }),
   urgency: ValueTypeInputSchema,
   marketImpact: ValueTypeInputSchema,
   strategic: ValueTypeInputSchema,
