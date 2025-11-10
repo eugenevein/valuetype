@@ -16,11 +16,12 @@ export function useFirestoreQuery(path: string | null, options: QueryOptions = {
   const [error, setError] = useState<Error | null>(null);
 
   // Destructure for useEffect dependency array
-  const orderByField = options.orderBy?.[0];
-  const orderByDirection = options.orderBy?.[1];
-  const whereField = options.where?.[0];
-  const whereOp = options.where?.[1];
-  const whereValue = options.where?.[2];
+  const { orderBy, where } = options;
+  const orderByField = orderBy?.[0];
+  const orderByDirection = orderBy?.[1];
+  const whereField = where?.[0];
+  const whereOp = where?.[1];
+  const whereValue = where?.[2];
 
   useEffect(() => {
     // Don't run query if path is null or if a `where` clause is waiting for a value (e.g., user.uid)
