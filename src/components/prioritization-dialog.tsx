@@ -40,7 +40,14 @@ const calculateDirectScore = (assessment: Assessment): number => {
 const directPrioritization = (assessments: Assessment[]) => {
   return [...assessments]
     .map(a => ({ ...a, score: calculateDirectScore(a) }))
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => {
+      // First, sort by score in descending order
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+      // If scores are equal, sort by T-shirt size in ascending order (smaller is better)
+      return tShirtSizePoints[a.tShirtSize] - tShirtSizePoints[b.tShirtSize];
+    });
 };
 
 const calculateRoi = (assessment: Assessment): number => {
@@ -125,7 +132,7 @@ export function PrioritizationDialog({ isOpen, onClose, assessments }: Prioritiz
           {/* Direct Prioritization */}
           <div className="space-y-4">
             <h3 className="font-semibold text-lg text-card-foreground">Direct Prioritization</h3>
-            <p className="text-sm text-muted-foreground">Epics sorted by the sum of points from all value types (High=3, Mid=2, Low=1).</p>
+            <p className="text-sm text-muted-foreground">Epics sorted by value score, then by effort (T-shirt size).</p>
             <div className="border rounded-lg">
                 <Table>
                     <TableHeader>
@@ -211,3 +218,5 @@ export function PrioritizationDialog({ isOpen, onClose, assessments }: Prioritiz
     </Dialog>
   );
 }
+
+    
